@@ -104,7 +104,7 @@ def move_frente_casa(motor_esquerda, motor_direita, rotacoes, orientacao):
     else:
         xPos = atualiza_posicao_eixo_x(orientacao)
 
-def move_atras_1_casa(motor_esquerda, motor_direita, rotacoes):
+def move_atras_casa(motor_esquerda, motor_direita, rotacoes):
     mv_fr = MoveTank(motor_esquerda, motor_direita)
     # Primeiro e segundo parâmetro são a velocidade dos motores, o terceiro sendo o numero de rotacoes
     mv_fr.on_for_rotations(-25,-25, rotacoes)
@@ -123,6 +123,24 @@ def vira_esquerda(motor_esquerda, motor_direita, rotacoes, index):
     # Atualizamos o indice para a orientacao do robot
     return index - 1
 
+def desloca_posicao(sensor_us, destino_y, destino_x,
+motor_esquerda, motor_direita, rotacoes_casa,
+rotacoes_virar, array, matriz):
+    global ori_index, orientacao_robot
+
+    while(yPos < destino_y):
+        procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, matriz, ori_index)
+        move_frente_casa(motor_esquerda, motor_direita, rotacoes_casa, orientacao_robot)
+    
+    if (destino_x > xPos):
+        while (orientacao_robot != "Este"):
+            ori_index = vira_direita(motor_esquerda, motor_direita, rotacoes_virar, ori_index)
+            orientacao_robot = atualiza_orientacao(array, ori_index, orientacao_robot)
+            print(orientacao_robot)
+        
+        while (destino_x > xPos):
+            move_frente_casa(motor_esquerda, motor_direita, rotacoes_casa, orientacao_robot)
+
 # =================== #
 # Funcoes de sensores #
 # =================== #
@@ -134,32 +152,51 @@ def deteta_parede(sensor_us):
             voice.speak("Something here!")
             return True
 
-
 # def deteta_toque(sensor_toq):
 #     while True:
 #         if sensor_toq.is_pressed:
 #             move_frente(OUTPUT_D, OUTPUT_C, ROTACOES_CASA)
 
 # Esta verificação é feita constantemente para procurar alguma peça, parede ou ovelha
-def procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes):
+def procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, matriz, index):
     global xPos, yPos
     mv_dir = MoveTank(motor_esquerda, motor_direita)
     detetou = 0
 
     # Se estamos em alguma posição onde x = 0, quer dizer que só precisamos de verificar a célula acima (y+1) ou então a célula ao lado (x+1)
     if xPos == 0:
-        mv_dir.on_for_rotations(10, 10, rotacoes)
+        # Procurar peças diretamente à frete do robot
+        mv_dir.on_for_rotations(10, 10, rotacoes_casa)
         if deteta_parede(sensor_us):
-            mv_dir.on_for_rotations(-10, -10, rotacoes)
+            mv_dir.on_for_rotations(-10, -10, rotacoes_casa)
+            # Iniciar ler a lista de peças
+            # TODO
+        else:
+            # Voltar à posição inicial
+            mv_dir.on_for_rotations(-10, -10, rotacoes_casa)
+            # Indicar que a posição está vazia
+            matriz[xPos+1][yPos] = "0"
+        
+        # Procurar peças à direita do robot
+        vira_direita(motor_esquerda, motor_direita, rotacoes_virar, index)
+        mv_dir.on_for_rotations(10, 10, rotacoes_casa)
+        if deteta_parede(sensor_us):
+            mv_dir.on_for_rotations(-10, -10, rotacoes_casa)
+            # Inicia a leitura da lista de peças
+            # TODO
+        else:
+            # Voltar à posição inicial
+            mv_dir.on_for_rotations(-10, -10, rotacoes_casa)
+            vira_esquerda(motor_esquerda, motor_direita, rotacoes_virar, index)
+            # Indicar que a posição está vazia
+            matriz[xPos][yPos+1] = "0"
 
 # Esta função serve para determinar se existe alguma ovelha por trás da parede
-def parede_ovelha()
-
+# def parede_ovelha()
 
 # =================== #
 #      DEBUGGING      #
 # =================== #
-
 
 # print(xPos, yPos)
 # move_frente_casa(MOTOR_ESQ, MOTOR_DIR, ROTACOES_CASA, orientacao_robot)
@@ -171,7 +208,21 @@ def parede_ovelha()
 # move_frente_casa(MOTOR_ESQ, MOTOR_DIR, ROTACOES_CASA, orientacao_robot)
 # print(xPos, yPos)
 
-procura_peca(us, MOTOR_ESQ, MOTOR_DIR, ROTACOES_VERIF)
+# procura_peca(us, MOTOR_ESQ, MOTOR_DIR, ROTACOES_VERIF)
+# preenche_matriz(matriz)
+# imprime_matriz(matriz)
+# print("\n")
+
+# procura_peca(us, MOTOR_ESQ, MOTOR_DIR,
+# ROTACOES_CASA, ROTACOES_NOV_GRAUS, matriz, ori_index)
+
+imprime_matriz(matriz)
+print("\n")
+preenche_matriz(matriz)
+
+desloca_posicao(us, 2, 2,
+MOTOR_ESQ, MOTOR_DIR, ROTACOES_CASA,
+ROTACOES_NOV_GRAUS, orientacoes, matriz)
 
 while(1):
     sleep(1)
