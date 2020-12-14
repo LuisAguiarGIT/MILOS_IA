@@ -1,0 +1,43 @@
+# global array
+# array = []
+# global posicao
+# posicao = 0
+
+
+# def move_posicao(motor_esquerda, motor_direita, rotacoes, orientacao):
+#     global xPos, yPos
+
+#     move_frente(motor_esquerda, motor_direita, rotacoes)
+#     atualiza_posicao(xPos, yPos, orientacao)
+
+
+# def atualiza_posicao(posicao, orientacao):
+#     if orientacao == "Norte":
+#         return posicao + 6
+#     elif orientacao == "Este":
+#         return posicao + 1
+#     elif orientacao == "Sul":
+#         return posicao - 6
+#     else:
+#         return posicao - 1
+
+# ============================ #
+# Definicao da classe de robot #
+# ============================ #
+
+# class Robot:
+#     def __init__(self, orientacao, posicao, ovelhas):
+#     self.orientacao = orientacao  
+#     self.posicao = posicao
+#     self.ovelhas = ovelhas 
+
+# def preenche_array(array):
+#     for i in array:
+#         array.append("#")
+#     print(" | ")
+
+
+# Array
+# print(posicao)
+# move_frente(MOTOR_ESQ, MOTOR_DIR, ROTACOES_CASA, orientacao_robot)
+# print(posicao)
