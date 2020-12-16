@@ -147,15 +147,15 @@ rotacoes_virar, array, matriz):
 
     # if (matriz[yPos+1] == )
     while(yPos < destino_y):
-
+        
+        # Enquanto o robot não estiver virado para norte, vai virar à direita #
         while (orientacao_robot != "Norte"):
             ori_index = vira_direita(motor_esquerda, motor_direita, rotacoes_virar, ori_index)
             orientacao_robot = atualiza_orientacao(array, ori_index, orientacao_robot)
             print(orientacao_robot)
 
-        # procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, matriz, ori_index)
+        # Vai realizar a procura, e depois mover-se x casa para a frente
         procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, matriz)
-        imprime_matriz(matriz)
         move_frente_casa(motor_esquerda, motor_direita, rotacoes_casa, orientacao_robot)
     
     # Verifica se a posição do robot é maior do que o destino
@@ -167,7 +167,6 @@ rotacoes_virar, array, matriz):
             print(orientacao_robot)
 
         procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, matriz)
-        imprime_matriz(matriz)
         move_frente_casa(motor_esquerda, motor_direita, rotacoes_casa, orientacao_robot)
 
 def desloca_posicao_x(sensor_us, destino_x,
@@ -184,7 +183,6 @@ rotacoes_virar, array, matriz):
 
         # procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, matriz, ori_index)
         procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, matriz)
-        imprime_matriz(matriz)
         move_frente_casa(motor_esquerda, motor_direita, rotacoes_casa, orientacao_robot)
     
     # Verifica se a posição do robot é maior do que o destino
@@ -241,10 +239,37 @@ def procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotaco
     # 3 - Parede acima || 1a - Parede acima com ovelha
     # 4 - Parede à direita || 4a - Parede à direita com ovelha
 
-    # Se estamos em alguma posição onde x = 0, quer dizer que só precisamos de verificar a célula acima (y+1) ou então a célula ao lado (x+1)
-    # if xPos == 0:
-
     # Procurar peças diretamente à frente do robot
+    mv_dir.on_for_rotations(20, 20, rotacoes_casa)
+
+    if deteta_parede(sensor_us):
+        # Voltar à posição original
+        mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
+        # Iniciar ler a lista de peças
+
+        # Aguardar o toque no robot(botão acima)
+        while not confirm.is_pressed:
+            pass
+        
+        # ============================================================================================================================== #
+        #                                   IMPORTANTE E RELEVANTE PARA AS SEGUINTES CONDIÇÕES                                           #
+        # ============================================================================================================================== #
+
+        # ler_cores vai fazer append a uma variável, na função acima tem a explicação de cada caso #
+        ler_cores() 
+        # processado vai filtrar a variável anterior, pois tem um problema de ler cores muitas vezes seguidas. Vai retirar repetições 
+        processado = "".join(dict.fromkeys(verifica))
+        # Isto só serve para fazer print no pc em vez no robot (file = stderr)
+        print(processado, file=stderr)
+        # Vamos marcar na matriz na posição acima que existe uma peça
+        matriz[yPos+1][xPos] = processado
+
+    else:
+        # Voltar à posição inicial
+        mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
+
+    # Procurar peças diretamente à direita do robot
+    vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
     mv_dir.on_for_rotations(20, 20, rotacoes_casa)
 
     if deteta_parede(sensor_us):
@@ -255,73 +280,51 @@ def procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotaco
         while not confirm.is_pressed:
             pass
         ler_cores()
-        sleep(1)
         processado = "".join(dict.fromkeys(verifica))
-        sleep(1)
-        print(processado)
-        sleep(1)
-        matriz[yPos+1][xPos] = processado
+        print(processado, file=stderr)
+        matriz[yPos][xPos+1] = processado
+    else:
+        # Voltar à posição inicial
+        mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
+    
+    # Procurar peças diretamente abaixo do robot
+    vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
+    mv_dir.on_for_rotations(20, 20, rotacoes_casa)
 
+    if deteta_parede(sensor_us):
+        # Voltar à posição original
+        mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
+        # Iniciar ler a lista de peças
+        while not confirm.is_pressed:
+            pass
+        ler_cores()
+        processado = "".join(dict.fromkeys(verifica))
+        print(processado, file=stderr)
+        matriz[yPos-1][xPos] = processado
+    else:
+        # Voltar à posição inicial
+        mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
+    
+    # Procurar peças diretamente à esquerda do robot
+    vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
+    mv_dir.on_for_rotations(20, 20, rotacoes_casa)
+
+    if deteta_parede(sensor_us):
+        # Voltar à posição original
+        mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
+
+        # Iniciar ler a lista de peças
+        while not confirm.is_pressed:
+            pass
+        ler_cores()
+        processado = "".join(dict.fromkeys(verifica))
+        print(processado, file=stderr)
+        matriz[yPos][xPos-1] = processado
     else:
         # Voltar à posição inicial
         mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
 
-    # # Procurar peças diretamente à direita do robot
-    # vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
-    # mv_dir.on_for_rotations(20, 20, rotacoes_casa)
-
-    # if deteta_parede(sensor_us):
-    #     # Voltar à posição original
-    #     mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
-    #     # Iniciar ler a lista de peças
-    #     # TODO
-    #     while not confirm.is_pressed:
-    #         pass
-    #     ler_cores()
-    #     processado = "".join(dict.fromkeys(verifica))
-    #     matriz[yPos][xPos+1] = processado
-    # else:
-    #     # Voltar à posição inicial
-    #     mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
-    
-    # # Procurar peças diretamente abaixo do robot
-    # vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
-    # mv_dir.on_for_rotations(20, 20, rotacoes_casa)
-
-    # if deteta_parede(sensor_us):
-    #     # Voltar à posição original
-    #     mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
-    #     # Iniciar ler a lista de peças
-    #     # TODO
-    #     while not confirm.is_pressed:
-    #         pass
-    #     ler_cores()
-    #     processado = "".join(dict.fromkeys(verifica))
-    #     matriz[yPos-1][xPos] = processado
-    # else:
-    #     # Voltar à posição inicial
-    #     mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
-    
-    # # Procurar peças diretamente à esquerda do robot
-    # vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
-    # mv_dir.on_for_rotations(20, 20, rotacoes_casa)
-
-    # if deteta_parede(sensor_us):
-    #     # Voltar à posição original
-    #     mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
-
-    #     # Iniciar ler a lista de peças
-    #     # TODO
-    #     while not confirm.is_pressed:
-    #         pass
-    #     ler_cores()
-    #     processado = "".join(dict.fromkeys(verifica))
-    #     matriz[yPos][xPos-1] = processado
-    # else:
-    #     # Voltar à posição inicial
-    #     mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
-
-    # vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
+    vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
 
 # SENSOR DE CORES #
 
@@ -350,6 +353,8 @@ def ler_cores():
     global verifica
     steer_pair.on(steering=0, speed=VELOCIDADE_PROCURA) 
     sleep(0.3)
+
+    # METER A PAREDE (AZUL) SEMPRE À FRENTE PARA NÃO DAR BARRACA #
 
     cor = cor_rgb()
     while cor != 'red': #anda em frente até encontrar a cor vermelha -- Fim da lista
