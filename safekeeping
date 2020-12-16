@@ -98,3 +98,5 @@
             vira_direita(motor_esquerda, motor_direita, rotacoes_virar, index)
             # Indicar que a posição está vazia
             matriz[xPos][yPos+1] = "0"
+
+"program": "/home/robot/${workspaceRootFolderName}/main.py",
