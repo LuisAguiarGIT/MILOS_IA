@@ -2,6 +2,7 @@
 # BIBLIOTECAS #
 from time import sleep
 from array import *
+from collections import OrderedDict
 
 from ev3dev2.motor import LargeMotor, OUTPUT_D, OUTPUT_C, SpeedRPS, MoveTank, MoveSteering
 from ev3dev2.sensor import INPUT_3, INPUT_4
@@ -34,7 +35,7 @@ orientacao_robot = orientacoes[ori_index]
 # Constantes relevantes
 ROTACOES_NOV_GRAUS = 1.3
 ROTACOES_CASA = 2.1
-ROTACOES_VERIF = 0.7
+ROTACOES_VERIF = 0.3
 VELOCIDADE_PROCURA = 20
 MOTOR_ESQ = OUTPUT_D
 MOTOR_DIR = OUTPUT_C
@@ -58,7 +59,7 @@ confirm = TouchSensor(INPUT_4)
 # =================================== #
 
 # Irá, como o nome indica, preencher a matriz com cardinal. Cardinal indica que a posicao está vazia
-def preenche_matriz(matriz):
+def preenche_matriz():
     for x in range(6):
         lista_interior = []
         for y in range(6):
@@ -66,11 +67,11 @@ def preenche_matriz(matriz):
         matriz.append(lista_interior)
 
 # Simplesmente imprime a matriz para fins de debugging
-def imprime_matriz(matriz):
+def imprime_matriz():
     for listas in matriz:
         for i in listas:
-            print(i,end='\t')
-        # print()
+            print(i,end='\t', file=stderr)
+        print(file=stderr)
 
 def atualiza_orientacao(array, index, orientacao):
     # Isto serve para "voltar ao início" do array para atualizar a orientação
@@ -142,10 +143,20 @@ def vira_esq_sem_indice(motor_esquerda, motor_direita, rotacoes):
 
 def desloca_posicao_y(sensor_us, destino_y,
 motor_esquerda, motor_direita, rotacoes_casa,
-rotacoes_virar, array, matriz):
+rotacoes_virar, array):
     global ori_index, orientacao_robot
 
-    # if (matriz[yPos+1] == )
+
+    procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar)
+    imprime_matriz()
+    print("{}yPos{}xPos{}Celula a frente".format(yPos, xPos, matriz[yPos+1][xPos]), file=stderr)
+    imprime_matriz()
+    if (matriz[yPos+1][xPos] == "1a"):
+        sleep(1)
+        voice.speak("Oh hell naw")
+        sleep(1)
+        # Desvia-se TODO
+    # else:
     while(yPos < destino_y):
         
         # Enquanto o robot não estiver virado para norte, vai virar à direita #
@@ -155,10 +166,19 @@ rotacoes_virar, array, matriz):
             print(orientacao_robot)
 
         # Vai realizar a procura, e depois mover-se x casa para a frente
-        procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, matriz)
         move_frente_casa(motor_esquerda, motor_direita, rotacoes_casa, orientacao_robot)
     
-    # Verifica se a posição do robot é maior do que o destino
+    # # Verifica se a posição do robot é maior do que o destino
+    # # TODO VER AS ORIENTACOES E ISSO
+    # procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar)
+    # imprime_matriz()
+    # print("{}yPos{}xPos{}Celula a frente".format(yPos, xPos, matriz[yPos+1][xPos]), file=stderr)
+    # imprime_matriz()
+    # if (matriz[yPos+1][xPos] == "1a"):
+    #     sleep(1)
+    #     voice.speak("Oh hell naw")
+    #     sleep(1)
+    #     # TODO Desvia-se 
     while(yPos > destino_y):
 
         while(orientacao_robot != "Sul"):
@@ -166,14 +186,23 @@ rotacoes_virar, array, matriz):
             orientacao_robot = atualiza_orientacao(array, ori_index, orientacao_robot)
             print(orientacao_robot)
 
-        procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, matriz)
         move_frente_casa(motor_esquerda, motor_direita, rotacoes_casa, orientacao_robot)
 
 def desloca_posicao_x(sensor_us, destino_x,
 motor_esquerda, motor_direita, rotacoes_casa,
-rotacoes_virar, array, matriz):
-    global ori_index, orientacao_robot, xPos, yPos
+rotacoes_virar, array):
+    global ori_index, orientacao_robot
 
+    # procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar)
+    # imprime_matriz()
+    # print("{}yPos{}xPos{}Celula a frente".format(yPos, xPos, matriz[yPos+1][xPos]), file=stderr)
+    # imprime_matriz()
+    # if (matriz[yPos][xPos+1] == "1a"):
+    #     sleep(1)
+    #     voice.speak("Oh hell naw")
+    #     sleep(1)
+        # Desvia-se TODO
+    procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar)
     while(xPos < destino_x):
 
         while (orientacao_robot != "Este"):
@@ -181,8 +210,6 @@ rotacoes_virar, array, matriz):
             orientacao_robot = atualiza_orientacao(array, ori_index, orientacao_robot)
             print(orientacao_robot)
 
-        # procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, matriz, ori_index)
-        procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, matriz)
         move_frente_casa(motor_esquerda, motor_direita, rotacoes_casa, orientacao_robot)
     
     # Verifica se a posição do robot é maior do que o destino
@@ -193,16 +220,15 @@ rotacoes_virar, array, matriz):
             orientacao_robot = atualiza_orientacao(array, ori_index, orientacao_robot)
             print(orientacao_robot)
 
-        procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, matriz)
         move_frente_casa(motor_esquerda, motor_direita, rotacoes_casa, orientacao_robot)
 
 def desloca_para_coor(sensor_us, destino_x, destino_y,
 motor_esquerda, motor_direita, rotacoes_casa,
-rotacoes_virar, array, matriz):
-    global ori_index, orientacao_robot, xPos, yPos
+rotacoes_virar, array):
+    global ori_index, orientacao_robot
 
-    desloca_posicao_y(sensor_us, destino_y, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, array, matriz)
-    desloca_posicao_x(sensor_us, destino_x, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, array, matriz)
+    desloca_posicao_y(sensor_us, destino_y, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, array)
+    desloca_posicao_x(sensor_us, destino_x, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, array)
 
     while(orientacao_robot != "Norte"):
         ori_index = vira_direita(motor_esquerda, motor_direita, rotacoes_virar, ori_index)
@@ -227,16 +253,15 @@ def deteta_parede(sensor_us):
 
 # Esta verificação é feita constantemente para procurar alguma peça, parede ou ovelha
 # SENSOR ULTRASÓNICO # 
-def procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar, matriz):
+def procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotacoes_virar):
     global xPos, yPos, verifica
     mv_dir = MoveTank(motor_esquerda, motor_direita)
-    pecas = 0
 
     # MATRIZ #
     # elementos que demonstram que algo existe na próxima posição #
     # 1 - Parede abaixo  || 1a - Parede abaixo com ovelha
     # 2 - Parede à esquerda ||  2a - Parede à esquerda com ovelha
-    # 3 - Parede acima || 1a - Parede acima com ovelha
+    # 3 - Parede acima || 3a - Parede acima com ovelha
     # 4 - Parede à direita || 4a - Parede à direita com ovelha
 
     # Procurar peças diretamente à frente do robot
@@ -258,9 +283,10 @@ def procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotaco
         # ler_cores vai fazer append a uma variável, na função acima tem a explicação de cada caso #
         ler_cores() 
         # processado vai filtrar a variável anterior, pois tem um problema de ler cores muitas vezes seguidas. Vai retirar repetições 
-        processado = "".join(dict.fromkeys(verifica))
+        # print(verifica, file=stderr)
+        processado = "".join(OrderedDict.fromkeys(verifica))
         # Isto só serve para fazer print no pc em vez no robot (file = stderr)
-        print(processado, file=stderr)
+        # print(processado, file=stderr)
         # Vamos marcar na matriz na posição acima que existe uma peça
         matriz[yPos+1][xPos] = processado
 
@@ -268,63 +294,63 @@ def procura_peca(sensor_us, motor_esquerda, motor_direita, rotacoes_casa, rotaco
         # Voltar à posição inicial
         mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
 
-    # Procurar peças diretamente à direita do robot
-    vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
-    mv_dir.on_for_rotations(20, 20, rotacoes_casa)
+    # # Procurar peças diretamente à direita do robot
+    # vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
+    # mv_dir.on_for_rotations(20, 20, rotacoes_casa)
 
-    if deteta_parede(sensor_us):
-        # Voltar à posição original
-        mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
-        # Iniciar ler a lista de peças
-        # TODO
-        while not confirm.is_pressed:
-            pass
-        ler_cores()
-        processado = "".join(dict.fromkeys(verifica))
-        print(processado, file=stderr)
-        matriz[yPos][xPos+1] = processado
-    else:
-        # Voltar à posição inicial
-        mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
+    # if deteta_parede(sensor_us):
+    #     # Voltar à posição original
+    #     mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
+    #     # Iniciar ler a lista de peças
+    #     # TODO
+    #     while not confirm.is_pressed:
+    #         pass
+    #     ler_cores()
+    #     processado = "".join(dict.fromkeys(verifica))
+    #     print(processado, file=stderr)
+    #     matriz[yPos][xPos+1] = processado
+    # else:
+    #     # Voltar à posição inicial
+    #     mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
     
-    # Procurar peças diretamente abaixo do robot
-    vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
-    mv_dir.on_for_rotations(20, 20, rotacoes_casa)
+    # # Procurar peças diretamente abaixo do robot
+    # vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
+    # mv_dir.on_for_rotations(20, 20, rotacoes_casa)
 
-    if deteta_parede(sensor_us):
-        # Voltar à posição original
-        mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
-        # Iniciar ler a lista de peças
-        while not confirm.is_pressed:
-            pass
-        ler_cores()
-        processado = "".join(dict.fromkeys(verifica))
-        print(processado, file=stderr)
-        matriz[yPos-1][xPos] = processado
-    else:
-        # Voltar à posição inicial
-        mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
+    # if deteta_parede(sensor_us):
+    #     # Voltar à posição original
+    #     mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
+    #     # Iniciar ler a lista de peças
+    #     while not confirm.is_pressed:
+    #         pass
+    #     ler_cores()
+    #     processado = "".join(dict.fromkeys(verifica))
+    #     print(processado, file=stderr)
+    #     matriz[yPos-1][xPos] = processado
+    # else:
+    #     # Voltar à posição inicial
+    #     mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
     
-    # Procurar peças diretamente à esquerda do robot
-    vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
-    mv_dir.on_for_rotations(20, 20, rotacoes_casa)
+    # # Procurar peças diretamente à esquerda do robot
+    # vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
+    # mv_dir.on_for_rotations(20, 20, rotacoes_casa)
 
-    if deteta_parede(sensor_us):
-        # Voltar à posição original
-        mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
+    # if deteta_parede(sensor_us):
+    #     # Voltar à posição original
+    #     mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
 
-        # Iniciar ler a lista de peças
-        while not confirm.is_pressed:
-            pass
-        ler_cores()
-        processado = "".join(dict.fromkeys(verifica))
-        print(processado, file=stderr)
-        matriz[yPos][xPos-1] = processado
-    else:
-        # Voltar à posição inicial
-        mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
+    #     # Iniciar ler a lista de peças
+    #     while not confirm.is_pressed:
+    #         pass
+    #     ler_cores()
+    #     processado = "".join(dict.fromkeys(verifica))
+    #     print(processado, file=stderr)
+    #     matriz[yPos][xPos-1] = processado
+    # else:
+    #     # Voltar à posição inicial
+    #     mv_dir.on_for_rotations(-20, -20, rotacoes_casa)
 
-    vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
+    # vira_dir_sem_indice(motor_esquerda, motor_direita, rotacoes_virar)
 
 # SENSOR DE CORES #
 
@@ -397,11 +423,11 @@ def move_to_start():
 #      DEBUGGING      #
 # =================== #
 
-preenche_matriz(matriz)
+preenche_matriz()
 
 desloca_para_coor(us, 3, 3,
 MOTOR_ESQ, MOTOR_DIR, ROTACOES_CASA,
-ROTACOES_NOV_GRAUS, orientacoes, matriz)
+ROTACOES_NOV_GRAUS, orientacoes)
 
 print(matriz, file=stderr)
 
