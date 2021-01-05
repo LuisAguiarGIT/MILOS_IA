@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # BIBLIOTECAS #
-# from time import sleep
-# from array import *
-# from collections import OrderedDict
+from time import sleep
+from array import *
+from collections import OrderedDict
 
-# from ev3dev2.motor import LargeMotor, OUTPUT_D, OUTPUT_C, SpeedRPS, MoveTank, MoveSteering
-# from ev3dev2.sensor import INPUT_3, INPUT_4
-# from ev3dev2.sensor.lego import TouchSensor, UltrasonicSensor, ColorSensor
-# from ev3dev2.sound import Sound
-# from sys import stderr
+from ev3dev2.motor import LargeMotor, OUTPUT_D, OUTPUT_C, SpeedRPS, MoveTank, MoveSteering
+from ev3dev2.sensor import INPUT_3, INPUT_4
+from ev3dev2.sensor.lego import TouchSensor, UltrasonicSensor, ColorSensor
+from ev3dev2.sound import Sound
+from sys import stderr
 
 
 # ========================================================== #
@@ -47,21 +47,37 @@ class Jogo:
         i = self.matriz[y_pos][x_pos]
         i.conteudo = 0
     
+    #   □ □ <-- Tentando visualizar, se existir uma parede de uma célula para outra, precisamos de assinalar duas paredes (pois cada célula tem 4 paredes)
+    #   No caso da parede à esquerda, na célula imediata existe uma parede à esquerda, e para a célula seguinte [x_pos - 1] existe uma parede à direita
+
     def assinala_parede_esq(self, y_pos, x_pos):
+        # Célula imediata
         i = self.matriz[y_pos][x_pos] 
         i.parede_esq = True
-    
+        # Célula seguinte
+        n = self.matriz[y_pos][x_pos - 1]
+        n.parede_dir = True
+        
     def assinala_parede_acim(self, y_pos, x_pos):
         i = self.matriz[y_pos][x_pos] 
         i.parede_acim = True
+
+        n = self.matriz[y_pos + 1][x_pos]
+        n.parede_abaix = True
     
     def assinala_parede_dir(self, y_pos, x_pos):
         i = self.matriz[y_pos][x_pos] 
         i.parede_dir = True
 
+        n = self.matriz[y_pos][x_pos + 1]
+        n.parede_esq = True
+
     def assinala_parede_abaix(self, y_pos, x_pos):
         i = self.matriz[y_pos][x_pos] 
         i.parede_abaix = True
+
+        n = self.matriz[y_pos - 1][x_pos]
+        n.parede_acim = True
         
 class Cell:
 
@@ -71,12 +87,6 @@ class Cell:
         self.parede_dir = False
         self.parede_abaix = False
         self.conteudo = "#"
-
-    def set_parede(self, parede):
-        self.parede = True
-    
-    def set_conteudo(self):
-        self.conteudo = 0
 
 class Robot:
 
@@ -126,28 +136,34 @@ class Robot:
             else:
                 self.x_pos -= 1
 
+# Criação de constantes
+
+# Criação dos objetos
+
+# Programa
 jg = Jogo()
-jg.preenche_matriz()
-jg.imprime_matriz()
 rb = Robot()
 
-jg.assinala_parede_abaix(1, 0)
-print("\n")
-jg.imprime_matriz()
-print("\n")
-rb.move_frente(jg.matriz)
-jg.imprime_matriz()
+# Sensores/ Robot
+voice = Sound()
+us = UltrasonicSensor()
+steer_pair = MoveSteering(OUTPUT_D, OUTPUT_C)
+cl = ColorSensor()
+confirm = TouchSensor(INPUT_4)
+det_touch = TouchSensor(INPUT_3)
 
-        
+# Atribuição de modos aos sensores 
+us.mode = 'US-DIST-CM'
+units = us.units
 
-jg = Jogo()
-jg.preenche_matriz()
-jg.imprime_matriz()
-rb = Robot()
-jg.muda_valor(rb.y_pos, rb.x_pos)
-print("\n")
-jg.imprime_matriz()
-print("\n")
-rb.move_frente()
-jg.muda_valor(rb.y_pos, rb.x_pos)
-jg.imprime_matriz()
+# jg = Jogo()
+# jg.preenche_matriz()
+# jg.imprime_matriz()
+# rb = Robot()
+
+# jg.assinala_parede_abaix(1, 0)
+# print("\n")
+# jg.imprime_matriz()
+# print("\n")
+# rb.move_frente(jg.matriz)
+# jg.imprime_matriz()
