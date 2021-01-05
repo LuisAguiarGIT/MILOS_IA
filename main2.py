@@ -10,6 +10,20 @@
 # from ev3dev2.sound import Sound
 # from sys import stderr
 
+
+# ========================================================== #
+# ASPETOS GERAIS DO JOGO / ROBOT                             #
+# ========================================================== #
+# 0 indica que existe uma ovelha na célula, True indica que existe uma parede
+# 
+#
+#
+#
+#
+#
+#
+#
+
 class Jogo:
 
     def __init__(self):
@@ -32,7 +46,23 @@ class Jogo:
     def muda_valor(self, y_pos, x_pos):
         i = self.matriz[y_pos][x_pos]
         i.conteudo = 0
-        
+    
+    def assinala_parede_esq(self, y_pos, x_pos):
+        i = self.matriz[y_pos][x_pos] 
+        i.parede_esq = True
+    
+    def assinala_parede_acim(self, y_pos, x_pos):
+        i = self.matriz[y_pos][x_pos] 
+        i.parede_acim = True
+    
+    def assinala_parede_dir(self, y_pos, x_pos):
+        i = self.matriz[y_pos][x_pos] 
+        i.parede_dir = True
+
+    def assinala_parede_abaix(self, y_pos, x_pos):
+        i = self.matriz[y_pos][x_pos] 
+        i.parede_abaix = True
+    
 class Cell:
 
     def __init__(self):
