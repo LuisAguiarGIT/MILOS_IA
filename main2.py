@@ -62,7 +62,7 @@ class Jogo:
     def assinala_parede_abaix(self, y_pos, x_pos):
         i = self.matriz[y_pos][x_pos] 
         i.parede_abaix = True
-    
+        
 class Cell:
 
     def __init__(self):
@@ -99,15 +99,45 @@ class Robot:
     def atualiza_orientacao(self):
         self.orientacao_robot = self.orientacoes[self.ori_index % len(self.orientacoes)]
 
-    def move_frente(self):
+    def move_frente(self, matriz):
+        prox_pos_y = matriz[self.y_pos + 1][self.x_pos]
+        prox_pos_x = matriz[self.y_pos][self.x_pos + 1]
+        pos_ant_y = matriz[self.y_pos - 1][self.x_pos]
+        pos_ant_y = matriz[self.y_pos][self.x_pos - 1]
+        
         if(self.orientacao_robot == "Norte"):
-            self.y_pos += 1
+            if prox_pos_y.parede_abaix == True:
+                print("Tem parede!")
+            else:
+                self.y_pos += 1
         if(self.orientacao_robot == "Este"):
-            self.x_pos += 1
+            if prox_pos_x.parede_esq == True:
+                print("Tem parede!")
+            else:
+                self.x_pos += 1
         if(self.orientacao_robot == "Sul"):
-            self.y_pos -= 1
+            if prox_ant_y.parede_acim == True:
+                print("Tem parede!")
+            else:
+                self.y_pos -= 1
         if(self.orientacao_robot == "Oeste"):
-            self.x_pos -= 1
+            if prox_ant_x.parede_esq == True:
+                print("Tem parede!")
+            else:
+                self.x_pos -= 1
+
+jg = Jogo()
+jg.preenche_matriz()
+jg.imprime_matriz()
+rb = Robot()
+
+jg.assinala_parede_abaix(1, 0)
+print("\n")
+jg.imprime_matriz()
+print("\n")
+rb.move_frente(jg.matriz)
+jg.imprime_matriz()
+
         
 
 jg = Jogo()
