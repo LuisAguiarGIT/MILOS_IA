@@ -11,6 +11,7 @@
 # from sys import stderr
 
 class Jogo:
+
     def __init__(self):
         self.n_ovelhas = 2
         self.matriz = []
@@ -27,9 +28,9 @@ class Jogo:
             for i in listas:
                 print(i.conteudo,end='\t')
             print()
-
         
 class Cell:
+
     def __init__(self):
         self.parede_esq = False
         self.parede_acim = False
@@ -44,45 +45,40 @@ class Cell:
         self.conteudo = 0
 
 class Robot:
+
     def __init__(self):
         self.x_pos = 0
         self.y_pos = 0
         self.orientacoes = ["Norte", "Este", "Sul", "Oeste"]
         self.ori_index = 0
         self.orientacao_robot = self.orientacoes[self.ori_index]
-    
-    def atualiza_pos_x(self):
-        if(self.orientacao_robot == "Este"):
-            return self.x_pos + 1
-        
-        if(self.orientacao_robot == "Oeste"):
-            return self.x_pos - 1
-    
-    def atualiza_pos_y(self):
-        if(self.orientacao_robot == "Norte"):
-            return self.y_pos + 1
-        
-        if(self.orientacao_robot == "Sul"):
-            return self.y_pos - 1
+        self.jogadas = 2
     
     def vira_esquerda(self):
-        return self.ori_index - 1
+        self.ori_index -= 1
+        self.orientacao = self.atualiza_orientacao()
     
     def vira_direita(self):
-        return self.ori_index + 1
+        self.ori_index += 1
+        self.orientacao = self.atualiza_orientacao()
 
     def atualiza_orientacao(self):
-        return self.orientacoes[self.ori_index % len(orientacoes)]
+        self.orientacao_robot = self.orientacoes[self.ori_index % len(self.orientacoes)]
 
     def move_frente(self):
         if(self.orientacao_robot == "Norte"):
-            return self.y_pos + 1
+            self.y_pos += 1
         if(self.orientacao_robot == "Este"):
-            return self.x_pos + 1
+            self.x_pos += 1
         if(self.orientacao_robot == "Sul"):
-            return self.y_pos - 1
+            self.y_pos -= 1
         if(self.orientacao_robot == "Oeste"):
-            return self.x_pos - 1
+            self.x_pos -= 1
         
 
-
+jg = Jogo()
+jg.preenche_matriz()
+jg.imprime_matriz()
+rb = Robot()
+rb.move_frente()
+print(rb.x_pos, rb.y_pos)
