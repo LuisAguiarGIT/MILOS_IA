@@ -108,6 +108,43 @@ class Robot:
 
     def atualiza_orientacao(self):
         self.orientacao_robot = self.orientacoes[self.ori_index % len(self.orientacoes)]
+    
+    def cor_rgb():
+
+        #intervalos RGB para cada cor utilizada, garantindo que o sensor reconheça a cor correta o maior numero de vezes
+        r = cl.rgb[0]
+        g = cl.rgb[1]
+        b = cl.rgb[2]
+
+        if r >= 200 and g <= 60 and b <= 60:
+            cor = 'red'
+        elif r <= 35 and g <= 35 and b <= 35 :
+            cor = 'black'
+        elif r >= 210 and g >= 210 and b >= 140:
+            cor = 'white'
+        else:
+            cor = cor_rgb()
+
+        return cor
+    
+    
+    def verifica_cor():
+        steer_pair.on(steering=0, speed=VELOCIDADE_PROCURA) 
+        sleep(0.3)
+
+        cor = cor_rgb()
+        while cor != 'red' or cor != 'black': 
+            cor = cor_rgb()
+            if cor == 'red': 
+                print (cor)
+                # Tem de assinalar a parede
+                # Começa a leitura para ver se existe uma ovelha
+            if cor == 'black'
+                print (cor)
+                # Está livre
+                # Começa a leitura para ver se existe uma ovelha
+                while cor != 'white': 
+                    cor = cor_rgb()
 
     def move_frente(self, matriz):
         prox_pos_y = matriz[self.y_pos + 1][self.x_pos]
@@ -116,24 +153,47 @@ class Robot:
         pos_ant_y = matriz[self.y_pos][self.x_pos - 1]
         
         if(self.orientacao_robot == "Norte"):
+
             if prox_pos_y.parede_abaix == True:
                 print("Tem parede!")
+                # Rotina de desvio
             else:
+                # Move-se
+                
+                # Atualiza posição
                 self.y_pos += 1
+
         if(self.orientacao_robot == "Este"):
+
             if prox_pos_x.parede_esq == True:
                 print("Tem parede!")
+                # Rotina de desvio
             else:
+                # Move-se
+                
+                # Atualiza posição
                 self.x_pos += 1
+
         if(self.orientacao_robot == "Sul"):
+
             if prox_ant_y.parede_acim == True:
                 print("Tem parede!")
+                # Rotina de desvio
             else:
+                # Move-se
+                
+                # Atualiza posição
                 self.y_pos -= 1
+
         if(self.orientacao_robot == "Oeste"):
+
             if prox_ant_x.parede_esq == True:
                 print("Tem parede!")
+                # Rotina de desvio
             else:
+                # Move-se
+                
+                # Atualiza posição
                 self.x_pos -= 1
 
 # Criação de constantes
