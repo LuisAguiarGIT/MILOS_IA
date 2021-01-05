@@ -28,6 +28,10 @@ class Jogo:
             for i in listas:
                 print(i.conteudo,end='\t')
             print()
+            
+    def muda_valor(self, y_pos, x_pos):
+        i = self.matriz[y_pos][x_pos]
+        i.conteudo = 0
         
 class Cell:
 
@@ -80,5 +84,10 @@ jg = Jogo()
 jg.preenche_matriz()
 jg.imprime_matriz()
 rb = Robot()
+jg.muda_valor(rb.y_pos, rb.x_pos)
+print("\n")
+jg.imprime_matriz()
+print("\n")
 rb.move_frente()
-print(rb.x_pos, rb.y_pos)
+jg.muda_valor(rb.y_pos, rb.x_pos)
+jg.imprime_matriz()
