@@ -46,38 +46,6 @@ class Jogo:
     def muda_valor(self, y_pos, x_pos):
         i = self.matriz[y_pos][x_pos]
         i.conteudo = 0
-    
-    #   □ □ <-- Tentando visualizar, se existir uma parede de uma célula para outra, precisamos de assinalar duas paredes (pois cada célula tem 4 paredes)
-    #   No caso da parede à esquerda, na célula imediata existe uma parede à esquerda, e para a célula seguinte [x_pos - 1] existe uma parede à direita
-
-    def assinala_parede_esq(self, y_pos, x_pos):
-        # Célula imediata
-        i = self.matriz[y_pos][x_pos] 
-        i.parede_esq = True
-        # Célula seguinte
-        n = self.matriz[y_pos][x_pos - 1]
-        n.parede_dir = True
-        
-    def assinala_parede_acim(self, y_pos, x_pos):
-        i = self.matriz[y_pos][x_pos] 
-        i.parede_acim = True
-
-        n = self.matriz[y_pos + 1][x_pos]
-        n.parede_abaix = True
-    
-    def assinala_parede_dir(self, y_pos, x_pos):
-        i = self.matriz[y_pos][x_pos] 
-        i.parede_dir = True
-
-        n = self.matriz[y_pos][x_pos + 1]
-        n.parede_esq = True
-
-    def assinala_parede_abaix(self, y_pos, x_pos):
-        i = self.matriz[y_pos][x_pos] 
-        i.parede_abaix = True
-
-        n = self.matriz[y_pos - 1][x_pos]
-        n.parede_acim = True
         
 class Cell:
 
@@ -195,6 +163,36 @@ class Robot:
                 
                 # Atualiza posição
                 self.x_pos -= 1
+    
+    #   □ □ <-- Tentando visualizar, se existir uma parede de uma célula para outra, precisamos de assinalar duas paredes (pois cada célula tem 4 paredes)
+    #   No caso da parede à esquerda, na célula imediata existe uma parede à esquerda, e para a célula seguinte [x_pos - 1] existe uma parede à direita
+
+    def assinala_parede(self, matriz):
+        i = matriz[self.y_pos][self.x_pos]
+
+        if self.orientacao_robot == "Norte":
+            i.parede_acim = True
+
+            n = matriz[self.y_pos + 1][self.x_pos]
+            n.parede_abaix = True
+
+        if self.orientacao_robot == "Este":
+            i.parede_dir = True
+            
+            n = matriz[self.y_pos][self.x_pos + 1]
+            n.parede_esq = True
+        
+        if self.orientacao_robot == "Sul":
+            i.parede_abaix = True
+            
+            n = matriz[self.y_pos - 1][self.x_pos]
+            n.parede_acim = True
+        
+        if self.orientacao_robot == "Oeste":
+            i.parede_esq = True
+            
+            n = matriz[self.y_pos - 1][self.x_pos]
+            n.parede_dir = True
 
 # Criação de constantes
 
