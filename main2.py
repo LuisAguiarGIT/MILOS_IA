@@ -42,10 +42,6 @@ class Jogo:
             for i in listas:
                 print(i.conteudo,end='\t')
             print()
-            
-    def muda_valor(self, y_pos, x_pos):
-        i = self.matriz[y_pos][x_pos]
-        i.conteudo = 0
         
 class Cell:
 
@@ -96,21 +92,29 @@ class Robot:
         return cor
     
     
-    def verifica_cor():
+    def verifica_cor(self, matriz, us):
         steer_pair.on(steering=0, speed=VELOCIDADE_PROCURA) 
         sleep(0.3)
 
         cor = cor_rgb()
         while cor != 'red' or cor != 'black': 
+
             cor = cor_rgb()
             if cor == 'red': 
                 print (cor)
                 # Tem de assinalar a parede
+                assinala_parede(matriz)
                 # Começa a leitura para ver se existe uma ovelha
+                if deteta_ovelha(us):
+                    assinala_ovelha(matriz)
+
             if cor == 'black'
                 print (cor)
                 # Está livre
                 # Começa a leitura para ver se existe uma ovelha
+                if deteta_ovelha(us):
+                    assinala_ovelha(matriz)
+
                 while cor != 'white': 
                     cor = cor_rgb()
 
@@ -193,6 +197,29 @@ class Robot:
             
             n = matriz[self.y_pos - 1][self.x_pos]
             n.parede_dir = True
+    
+    def assinala_ovelha(self, matriz):
+        if self.orientacao_robot == "Norte":
+            n = matriz[self.y_pos + 1][self.x_pos]
+            n.conteudo = 0
+
+        if self.orientacao_robot == "Este":
+            n = matriz[self.y_pos + 1][self.x_pos + 1]
+            n.conteudo = 0
+        
+        if self.orientacao_robot == "Sul":
+            n = matriz[self.y_pos - 1][self.x_pos]
+            n.conteudo = 0
+        
+        if self.orientacao_robot == "Oeste":
+            n = matriz[self.y_pos - 1][self.x_pos + 1]
+            n.conteudo = 0
+
+    def deteta_ovelha(sensor_us):
+        distance = sensor_us.value()/10 # converter mm para cm
+        # print(str(distance) + " " + units)
+        if distance < 20:
+            return True
 
 # Criação de constantes
 
