@@ -204,7 +204,7 @@ class Robot:
             n.conteudo = 0
 
         if self.orientacao_robot == "Este":
-            n = matriz[self.y_pos + 1][self.x_pos + 1]
+            n = matriz[self.y_pos][self.x_pos + 1]
             n.conteudo = 0
         
         if self.orientacao_robot == "Sul":
@@ -212,7 +212,7 @@ class Robot:
             n.conteudo = 0
         
         if self.orientacao_robot == "Oeste":
-            n = matriz[self.y_pos - 1][self.x_pos + 1]
+            n = matriz[self.y_pos][self.x_pos - 1]
             n.conteudo = 0
 
     def deteta_ovelha(sensor_us):
