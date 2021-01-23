@@ -90,7 +90,7 @@ class Robot:
             cor = cor_rgb()
 
         return cor
-    
+
     def verifica_periferia(self, matriz, us):
 
         while(self.orientacao_robot != "Norte"):
@@ -190,6 +190,40 @@ class Robot:
                 # Atualiza posição
                 self.x_pos -= 1
     
+    def desloca_y(self, y_destino, matriz):
+        while(self.y_pos < y_destino):
+
+            while(self.orientacao_robot != "Norte"):
+                vira_direita()
+        
+        move_frente(matriz)
+
+        while(self.y_pos > y_destino):
+
+            while(self.orientacao_robot != "Sul"):
+                vira_direita()
+        
+        move_frente(matriz)
+    
+    def desloca_x(self, x_destino, matriz):
+        while(self.x_pos < x_destino):
+
+            while(self.orientacao_robot != "Este"):
+                vira_direita()
+        
+        move_frente(matriz)
+
+        while(self.x_pos > x_destino):
+
+            while(self.orientacao_robot != "Oeste"):
+                vira_direita()
+        
+        move_frente(matriz)
+    
+    def desloca_para_coordenada(self, x_destino, y_destino, matriz):
+        desloca_y(y_destino, matriz)
+        desloca_x(x_destino, matriz)
+
     #   □ □ <-- Tentando visualizar, se existir uma parede de uma célula para outra, precisamos de assinalar duas paredes (pois cada célula tem 4 paredes)
     #   No caso da parede à esquerda, na célula imediata existe uma parede à esquerda, e para a célula seguinte [x_pos - 1] existe uma parede à direita
 
