@@ -91,7 +91,29 @@ class Robot:
 
         return cor
     
-    
+    def verifica_periferia(self, matriz, us):
+
+        while(self.orientacao_robot != "Norte"):
+            vira_direita()
+
+        # Ver posição a norte
+        verifica_cor()
+        # Volta atrás
+        vira_direita()
+        # Ver posição a este
+        verifica_cor()
+        # Volta atrás
+        vira_direita()
+        # Ver posição a sul
+        verifica_cor()
+        # Volta atrás
+        vira_direita()
+        # Ver posição a oeste
+        verifica_cor()
+        # Volta atrás
+        # Voltar a norte
+        vira_direita()
+
     def verifica_cor(self, matriz, us):
         steer_pair.on(steering=0, speed=VELOCIDADE_PROCURA) 
         sleep(0.3)
