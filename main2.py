@@ -36,7 +36,7 @@ class Jogo:
         #         print(i.conteudo, end='\t', file=stderr)
         # print('\t',file=stderr)
         for x in range(5):
-            print((i.conteudo)*5) 
+            print((i.conteudo)*5, file=stderr) 
         
 class Cell:
 
@@ -139,7 +139,7 @@ class Robot:
 
             cor = cor_rgb()
             if cor == 'red': 
-                print (cor)
+                print (cor, file=stderr)
                 # Tem de assinalar a parede
                 self.assinala_parede(matriz)
                 # Começa a leitura para ver se existe uma ovelha
@@ -147,7 +147,7 @@ class Robot:
                     self.assinala_ovelha(matriz)
 
             if cor == 'black':
-                print (cor)
+                print (cor, file=stderr)
                 # Está livre
                 # Começa a leitura para ver se existe uma ovelha
                 if deteta_ovelha(us):
