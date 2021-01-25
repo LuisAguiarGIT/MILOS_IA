@@ -10,7 +10,7 @@ from ev3dev2.sensor.lego import TouchSensor, UltrasonicSensor, ColorSensor
 from ev3dev2.sound import Sound
 from sys import stderr
 
-import heuristicas.py
+# import heuristicas.py
 
 # =============================================================================== #
 # ASPETOS GERAIS DO JOGO / ROBOT                                                  #
@@ -31,10 +31,12 @@ class Jogo:
             self.matriz.append(lista_interior)
     
     def imprime_matriz(self):
-        for listas in self.matriz:
-            for i in listas:
-                print(i.conteudo,end='\t')
-            print()
+        # for listas in self.matriz:
+        #     for i in listas:
+        #         print(i.conteudo, end='\t', file=stderr)
+        # print('\t',file=stderr)
+        for x in range(5):
+            print((i.conteudo)*5) 
         
 class Cell:
 
@@ -65,7 +67,51 @@ class Robot:
 
     def atualiza_orientacao(self):
         self.orientacao_robot = self.orientacoes[self.ori_index % len(self.orientacoes)]
-    
+
+    def verifica_periferia(self, matriz):
+
+        while(self.orientacao_robot != "Norte"):
+            self.vira_direita()
+
+        voice.speak("Can I check?")
+
+        while not confirm.is_pressed:
+            pass
+        # Ver posição a norte
+        self.verifica_cor()
+        # Volta atrás
+        self.move_atras()
+        self.vira_direita()
+
+        voice.speak("Can I check?")
+        while not confirm.is_pressed:
+            pass
+        
+        # Ver posição a este
+        self.verifica_cor()
+        # Volta atrás
+        self.move_atras()
+        self.vira_direita()
+
+        voice.speak("Can I check?")
+        while not confirm.is_pressed:
+            pass
+        # Ver posição a sul
+        self.verifica_cor()
+        # Volta atrás
+        self.move_atras()
+        self.vira_direita()
+        
+        voice.speak("Can I check?")
+        while not confirm.is_pressed:
+            pass
+        # Ver posição a oeste
+        self.verifica_cor()
+        # Volta atrás
+        self.move_atras()
+        # Voltar a norte
+        self.vira_direita()
+
     def cor_rgb():
 
         #intervalos RGB para cada cor utilizada, garantindo que o sensor reconheça a cor correta o maior numero de vezes
@@ -84,43 +130,6 @@ class Robot:
 
         return cor
 
-    def verifica_periferia(self, matriz):
-
-        while(self.orientacao_robot != "Norte"):
-            self.vira_direita()
-
-        voice.speak("Can I check?")
-
-        while not confirm.is_pressed:
-            pass
-        # Ver posição a norte
-        self.verifica_cor()
-        # Volta atrás
-        self.vira_direita()
-
-        while not confirm.is_pressed:
-            pass
-        
-        # Ver posição a este
-        self.verifica_cor()
-        # Volta atrás
-        self.vira_direita()
-
-        while not confirm.is_pressed:
-            pass
-        # Ver posição a sul
-        self.verifica_cor()
-        # Volta atrás
-        self.vira_direita()
-        
-        while not confirm.is_pressed:
-            pass
-        # Ver posição a oeste
-        self.verifica_cor()
-        # Volta atrás
-        # Voltar a norte
-        self.vira_direita()
-
     def verifica_cor(self, matriz, us):
         steer_pair.on(steering=0, speed=VELOCIDADE_PROCURA) 
         sleep(0.3)
@@ -137,7 +146,7 @@ class Robot:
                 if deteta_ovelha(us):
                     self.assinala_ovelha(matriz)
 
-            if cor == 'black'
+            if cor == 'black':
                 print (cor)
                 # Está livre
                 # Começa a leitura para ver se existe uma ovelha
@@ -157,6 +166,7 @@ class Robot:
         pos_ant_y = matriz[self.y_pos - 1][self.x_pos]
         pos_ant_y = matriz[self.y_pos][self.x_pos - 1]
         
+        voice.speak("Confirm")
         while not confirm.is_pressed:
             pass
         
@@ -167,7 +177,8 @@ class Robot:
                 # Rotina de desvio
             else:
                 # Move-se
-                
+                print("Chegou ao else", file=stderr)
+                mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
                 # Atualiza posição
                 self.y_pos += 1
 
@@ -178,65 +189,70 @@ class Robot:
                 # Rotina de desvio
             else:
                 # Move-se
-                
+                mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
                 # Atualiza posição
                 self.x_pos += 1
 
         if(self.orientacao_robot == "Sul"):
 
-            if prox_ant_y.parede_acim == True:
+            if pos_ant_y.parede_acim == True:
                 print("Tem parede!")
                 # Rotina de desvio
             else:
                 # Move-se
-                
+                mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
                 # Atualiza posição
                 self.y_pos -= 1
 
         if(self.orientacao_robot == "Oeste"):
 
-            if prox_ant_x.parede_esq == True:
+            if pos_ant_x.parede_esq == True:
                 print("Tem parede!")
                 # Rotina de desvio
             else:
                 # Move-se
-                
+                mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
                 # Atualiza posição
                 self.x_pos -= 1
     
+    def move_atras():
+        mv_dir.on_for_rotations(-25,-25, 0.7)
+    
     def desloca_y(self, y_destino, matriz):
+        
         while(self.y_pos < y_destino):
 
             while(self.orientacao_robot != "Norte"):
                 self.vira_direita()
+
+            self.verifica_periferia(matriz)
+            self.move_frente(matriz)
         
-        self.verifica_periferia(matriz)
-        self.move_frente(matriz)
 
         while(self.y_pos > y_destino):
 
             while(self.orientacao_robot != "Sul"):
                 self.vira_direita()
-        
-        self.verifica_periferia(matriz)
-        self.move_frente(matriz)
+
+            self.verifica_periferia(matriz)
+            self.move_frente(matriz)
     
     def desloca_x(self, x_destino, matriz):
         while(self.x_pos < x_destino):
 
             while(self.orientacao_robot != "Este"):
                 self.vira_direita()
-        
-        self.verifica_periferia(matriz)
-        self.move_frente(matriz)
+
+            self.verifica_periferia(matriz)
+            self.move_frente(matriz)
 
         while(self.x_pos > x_destino):
 
             while(self.orientacao_robot != "Oeste"):
                 self.vira_direita()
-        
-        self.verifica_periferia(matriz)
-        self.move_frente(matriz)
+
+            self.verifica_periferia(matriz)
+            self.move_frente(matriz)
     
     def desloca_para_coordenada(self, x_destino, y_destino, matriz):
         self.desloca_y(y_destino, matriz)
@@ -296,7 +312,9 @@ class Robot:
             return True
 
 # Criação de constantes
-
+ROTACOES_CASA = 2.1
+MOTOR_ESQ = OUTPUT_D
+MOTOR_DIR = OUTPUT_C
 # Criação dos objetos
 
 # Programa
@@ -307,6 +325,7 @@ rb = Robot()
 voice = Sound()
 us = UltrasonicSensor()
 steer_pair = MoveSteering(OUTPUT_D, OUTPUT_C)
+mv_dir = MoveTank(MOTOR_ESQ, MOTOR_DIR)
 cl = ColorSensor()
 confirm = TouchSensor(INPUT_4)
 det_touch = TouchSensor(INPUT_3)
@@ -315,11 +334,11 @@ det_touch = TouchSensor(INPUT_3)
 us.mode = 'US-DIST-CM'
 units = us.units
 
-# jg = Jogo()
-# jg.preenche_matriz()
-# jg.imprime_matriz()
-# rb = Robot()
-
+jg = Jogo()
+jg.preenche_matriz()
+jg.imprime_matriz()
+rb = Robot()
+rb.desloca_para_coordenada(3, 3, jg.matriz)
 # jg.assinala_parede_abaix(1, 0)
 # print("\n")
 # jg.imprime_matriz()
