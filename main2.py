@@ -36,7 +36,7 @@ class Jogo:
         #         print(i.conteudo, end='\t', file=stderr)
         # print('\t',file=stderr)
         for x in range(5):
-            print((i.conteudo)*5, file=stderr) 
+            print((i.conteudo)*5) 
         
 class Cell:
 
@@ -56,14 +56,6 @@ class Robot:
         self.ori_index = 0
         self.orientacao_robot = self.orientacoes[self.ori_index]
         self.jogadas = 2
-    
-    def vira_esquerda(self):
-        self.ori_index -= 1
-        self.orientacao = self.atualiza_orientacao()
-    
-    def vira_direita(self):
-        self.ori_index += 1
-        self.orientacao = self.atualiza_orientacao()
 
     def atualiza_orientacao(self):
         self.orientacao_robot = self.orientacoes[self.ori_index % len(self.orientacoes)]
@@ -112,6 +104,10 @@ class Robot:
         # Voltar a norte
         self.vira_direita()
 
+    # ============= #
+    # LEITURA CORES #
+    # ============= #
+
     def cor_rgb():
 
         #intervalos RGB para cada cor utilizada, garantindo que o sensor reconheça a cor correta o maior numero de vezes
@@ -139,7 +135,7 @@ class Robot:
 
             cor = cor_rgb()
             if cor == 'red': 
-                print (cor, file=stderr)
+                print (cor)
                 # Tem de assinalar a parede
                 self.assinala_parede(matriz)
                 # Começa a leitura para ver se existe uma ovelha
@@ -147,7 +143,7 @@ class Robot:
                     self.assinala_ovelha(matriz)
 
             if cor == 'black':
-                print (cor, file=stderr)
+                print (cor)
                 # Está livre
                 # Começa a leitura para ver se existe uma ovelha
                 if deteta_ovelha(us):
@@ -159,6 +155,14 @@ class Robot:
     # ========= #
     # MOVIMENTO #
     # ========= #
+
+    def vira_esquerda(self):
+        self.ori_index -= 1
+        self.orientacao = self.atualiza_orientacao()
+    
+    def vira_direita(self):
+        self.ori_index += 1
+        self.orientacao = self.atualiza_orientacao()
     
     def move_frente(self, matriz):
         prox_pos_y = matriz[self.y_pos + 1][self.x_pos]
@@ -173,8 +177,9 @@ class Robot:
         if(self.orientacao_robot == "Norte"):
 
             if prox_pos_y.parede_abaix == True:
-                print("Tem parede!")
+                print("Tem parede a Norte!", file=stderr)
                 # Rotina de desvio
+                desvio_eixo_y(matriz)
             else:
                 # Move-se
                 print("Chegou ao else", file=stderr)
@@ -185,8 +190,9 @@ class Robot:
         if(self.orientacao_robot == "Este"):
 
             if prox_pos_x.parede_esq == True:
-                print("Tem parede!")
+                print("Tem parede a Este!", file=stderr)
                 # Rotina de desvio
+                desvio_eixo_x(matriz)
             else:
                 # Move-se
                 mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
@@ -196,8 +202,9 @@ class Robot:
         if(self.orientacao_robot == "Sul"):
 
             if pos_ant_y.parede_acim == True:
-                print("Tem parede!")
+                print("Tem parede a Sul!", file=stderr)
                 # Rotina de desvio
+                desvio_eixo_y(matriz)
             else:
                 # Move-se
                 mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
@@ -207,16 +214,54 @@ class Robot:
         if(self.orientacao_robot == "Oeste"):
 
             if pos_ant_x.parede_esq == True:
-                print("Tem parede!")
+                print("Tem parede a Oeste!", file=stderr)
                 # Rotina de desvio
+                desvio_eixo_x(matriz)
             else:
                 # Move-se
                 mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
                 # Atualiza posição
                 self.x_pos -= 1
     
+    def desvio_eixo_y(self, matriz):
+
+        if(self.orientacao_robot == "Norte" and self.x_pos == 0):
+            self.vira_direita()
+            self.move_frente(matriz)
+
+        if(self.orientacao_robot == "Norte" and self.x_pos > 0 and self.x_pos < 5):
+            self.vira_direita()
+            self.move_frente(matriz)
+        
+        if(self.orientacao_robot == "Sul" and self.x_pos == 5):
+            self.vira_esquerda()
+            self.move_frente(matriz)    
+
+        if(self.orientacao_robot == "Sul" and self.x_pos < 5 and self.x_pos > 0):
+            self.vira_esquerda()
+            self.move_frente(matriz)    
+
+    def desvio_eixo_y(self, matriz):
+
+        if(self.orientacao_robot == "Oeste" and self.y_pos == 0):
+            self.vira_direita()
+            self.move_frente(matriz)
+
+        if(self.orientacao_robot == "Oeste" and self.y_pos > 0 and self.y_pos < 5):
+            self.vira_direita()
+            self.move_frente(matriz)
+        
+        if(self.orientacao_robot == "Este" and self.y_pos == 5):
+            self.vira_esquerda()
+            self.move_frente(matriz)    
+
+        if(self.orientacao_robot == "Este" and self.y_pos < 5 and self.y_pos > 0):
+            self.vira_esquerda()
+            self.move_frente(matriz)   
+
     def move_atras():
         mv_dir.on_for_rotations(-25,-25, 0.7)
+
     
     def desloca_y(self, y_destino, matriz):
         
