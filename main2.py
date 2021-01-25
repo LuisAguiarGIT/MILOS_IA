@@ -10,19 +10,12 @@ from ev3dev2.sensor.lego import TouchSensor, UltrasonicSensor, ColorSensor
 from ev3dev2.sound import Sound
 from sys import stderr
 
+import heuristicas.py
 
-# ========================================================== #
-# ASPETOS GERAIS DO JOGO / ROBOT                             #
-# ========================================================== #
+# =============================================================================== #
+# ASPETOS GERAIS DO JOGO / ROBOT                                                  #
+# =============================================================================== #
 # 0 indica que existe uma ovelha na célula, True indica que existe uma parede
-# 
-#
-#
-#
-#
-#
-#
-#
 
 class Jogo:
 
@@ -91,28 +84,42 @@ class Robot:
 
         return cor
 
-    def verifica_periferia(self, matriz, us):
+    def verifica_periferia(self, matriz):
 
         while(self.orientacao_robot != "Norte"):
-            vira_direita()
+            self.vira_direita()
 
+        voice.speak("Can I check?")
+
+        while not confirm.is_pressed:
+            pass
         # Ver posição a norte
-        verifica_cor()
+        self.verifica_cor()
         # Volta atrás
-        vira_direita()
+        self.vira_direita()
+
+        while not confirm.is_pressed:
+            pass
+        
         # Ver posição a este
-        verifica_cor()
+        self.verifica_cor()
         # Volta atrás
-        vira_direita()
+        self.vira_direita()
+
+        while not confirm.is_pressed:
+            pass
         # Ver posição a sul
-        verifica_cor()
+        self.verifica_cor()
         # Volta atrás
-        vira_direita()
+        self.vira_direita()
+        
+        while not confirm.is_pressed:
+            pass
         # Ver posição a oeste
-        verifica_cor()
+        self.verifica_cor()
         # Volta atrás
         # Voltar a norte
-        vira_direita()
+        self.vira_direita()
 
     def verifica_cor(self, matriz, us):
         steer_pair.on(steering=0, speed=VELOCIDADE_PROCURA) 
@@ -125,26 +132,33 @@ class Robot:
             if cor == 'red': 
                 print (cor)
                 # Tem de assinalar a parede
-                assinala_parede(matriz)
+                self.assinala_parede(matriz)
                 # Começa a leitura para ver se existe uma ovelha
                 if deteta_ovelha(us):
-                    assinala_ovelha(matriz)
+                    self.assinala_ovelha(matriz)
 
             if cor == 'black'
                 print (cor)
                 # Está livre
                 # Começa a leitura para ver se existe uma ovelha
                 if deteta_ovelha(us):
-                    assinala_ovelha(matriz)
+                    self.assinala_ovelha(matriz)
 
                 while cor != 'white': 
                     cor = cor_rgb()
 
+    # ========= #
+    # MOVIMENTO #
+    # ========= #
+    
     def move_frente(self, matriz):
         prox_pos_y = matriz[self.y_pos + 1][self.x_pos]
         prox_pos_x = matriz[self.y_pos][self.x_pos + 1]
         pos_ant_y = matriz[self.y_pos - 1][self.x_pos]
         pos_ant_y = matriz[self.y_pos][self.x_pos - 1]
+        
+        while not confirm.is_pressed:
+            pass
         
         if(self.orientacao_robot == "Norte"):
 
@@ -194,35 +208,39 @@ class Robot:
         while(self.y_pos < y_destino):
 
             while(self.orientacao_robot != "Norte"):
-                vira_direita()
+                self.vira_direita()
         
-        move_frente(matriz)
+        self.verifica_periferia(matriz)
+        self.move_frente(matriz)
 
         while(self.y_pos > y_destino):
 
             while(self.orientacao_robot != "Sul"):
-                vira_direita()
+                self.vira_direita()
         
-        move_frente(matriz)
+        self.verifica_periferia(matriz)
+        self.move_frente(matriz)
     
     def desloca_x(self, x_destino, matriz):
         while(self.x_pos < x_destino):
 
             while(self.orientacao_robot != "Este"):
-                vira_direita()
+                self.vira_direita()
         
-        move_frente(matriz)
+        self.verifica_periferia(matriz)
+        self.move_frente(matriz)
 
         while(self.x_pos > x_destino):
 
             while(self.orientacao_robot != "Oeste"):
-                vira_direita()
+                self.vira_direita()
         
-        move_frente(matriz)
+        self.verifica_periferia(matriz)
+        self.move_frente(matriz)
     
     def desloca_para_coordenada(self, x_destino, y_destino, matriz):
-        desloca_y(y_destino, matriz)
-        desloca_x(x_destino, matriz)
+        self.desloca_y(y_destino, matriz)
+        self.desloca_x(x_destino, matriz)
 
     #   □ □ <-- Tentando visualizar, se existir uma parede de uma célula para outra, precisamos de assinalar duas paredes (pois cada célula tem 4 paredes)
     #   No caso da parede à esquerda, na célula imediata existe uma parede à esquerda, e para a célula seguinte [x_pos - 1] existe uma parede à direita
