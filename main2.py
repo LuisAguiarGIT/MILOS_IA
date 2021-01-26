@@ -31,12 +31,10 @@ class Jogo:
             self.matriz.append(lista_interior)
     
     def imprime_matriz(self):
-        # for listas in self.matriz:
-        #     for i in listas:
-        #         print(i.conteudo, end='\t', file=stderr)
-        # print('\t',file=stderr)
-        for x in range(5):
-            print((i.conteudo)*5) 
+        for listas in self.matriz:
+            for i in listas:
+                print(i.conteudo, end='\t', file=stderr)
+        print('\t',file=stderr)
         
 class Cell:
 
@@ -69,10 +67,9 @@ class Robot:
 
         while not confirm.is_pressed:
             pass
+
         # Ver posição a norte
-        self.verifica_cor()
-        # Volta atrás
-        self.move_atras()
+        self.verifica_cor(matriz, us)
         self.vira_direita()
 
         voice.speak("Can I check?")
@@ -80,27 +77,21 @@ class Robot:
             pass
         
         # Ver posição a este
-        self.verifica_cor()
-        # Volta atrás
-        self.move_atras()
+        self.verifica_cor(matriz, us)
         self.vira_direita()
 
         voice.speak("Can I check?")
         while not confirm.is_pressed:
             pass
         # Ver posição a sul
-        self.verifica_cor()
-        # Volta atrás
-        self.move_atras()
+        self.verifica_cor(matriz, us)
         self.vira_direita()
         
         voice.speak("Can I check?")
         while not confirm.is_pressed:
             pass
         # Ver posição a oeste
-        self.verifica_cor()
-        # Volta atrás
-        self.move_atras()
+        self.verifica_cor(matriz, us)
         # Voltar a norte
         self.vira_direita()
 
@@ -108,7 +99,7 @@ class Robot:
     # LEITURA CORES #
     # ============= #
 
-    def cor_rgb():
+    def cor_rgb(self):
 
         #intervalos RGB para cada cor utilizada, garantindo que o sensor reconheça a cor correta o maior numero de vezes
         r = cl.rgb[0]
@@ -122,7 +113,7 @@ class Robot:
         elif r >= 210 and g >= 210 and b >= 140:
             cor = 'white'
         else:
-            cor = cor_rgb()
+            cor = self.cor_rgb()
 
         return cor
 
@@ -130,37 +121,43 @@ class Robot:
         steer_pair.on(steering=0, speed=VELOCIDADE_PROCURA) 
         sleep(0.3)
 
-        cor = cor_rgb()
-        while cor != 'red' or cor != 'black': 
+        cor = self.cor_rgb()
+        
+        if cor == "black" :
+            steer_pair.off()
+            
+            voice.speak("Searching!")
+            if self.deteta_ovelha(us):
+                self.assinala_ovelha(matriz)
+                voice.speak("Sheep!")
+            sleep(1)
 
-            cor = cor_rgb()
-            if cor == 'red': 
-                print (cor)
-                # Tem de assinalar a parede
-                self.assinala_parede(matriz)
-                # Começa a leitura para ver se existe uma ovelha
-                if deteta_ovelha(us):
-                    self.assinala_ovelha(matriz)
+            cor = 'white'
+            self.move_atras()
 
-            if cor == 'black':
-                print (cor)
-                # Está livre
-                # Começa a leitura para ver se existe uma ovelha
-                if deteta_ovelha(us):
-                    self.assinala_ovelha(matriz)
+        if cor == "red" :
+            steer_pair.off()
+            self.assinala_parede(matriz)
 
-                while cor != 'white': 
-                    cor = cor_rgb()
+            if self.deteta_ovelha(us) :
+                self.assinala_ovelha(matriz)
+                voice.speak("Sheep!")
+            sleep(1)
+
+            cor = 'white'
+            self.move_atras()
 
     # ========= #
     # MOVIMENTO #
     # ========= #
 
     def vira_esquerda(self):
+        mv_dir.on_for_rotations(-25, 25, 0.7)
         self.ori_index -= 1
         self.orientacao = self.atualiza_orientacao()
     
     def vira_direita(self):
+        mv_dir.on_for_rotations(25,-25, 0.7)
         self.ori_index += 1
         self.orientacao = self.atualiza_orientacao()
     
@@ -259,10 +256,9 @@ class Robot:
             self.vira_esquerda()
             self.move_frente(matriz)   
 
-    def move_atras():
+    def move_atras(self):
         mv_dir.on_for_rotations(-25,-25, 0.7)
 
-    
     def desloca_y(self, y_destino, matriz):
         
         while(self.y_pos < y_destino):
@@ -350,7 +346,7 @@ class Robot:
             n = matriz[self.y_pos][self.x_pos - 1]
             n.conteudo = 0
 
-    def deteta_ovelha(sensor_us):
+    def deteta_ovelha(self,sensor_us):
         distance = sensor_us.value()/10 # converter mm para cm
         # print(str(distance) + " " + units)
         if distance < 20:
@@ -360,6 +356,7 @@ class Robot:
 ROTACOES_CASA = 2.1
 MOTOR_ESQ = OUTPUT_D
 MOTOR_DIR = OUTPUT_C
+VELOCIDADE_PROCURA = 20
 # Criação dos objetos
 
 # Programa
