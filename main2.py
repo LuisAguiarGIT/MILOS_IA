@@ -34,7 +34,7 @@ class Jogo:
         for listas in self.matriz:
             for i in listas:
                 print(i.conteudo, end='\t', file=stderr)
-        print('\t',file=stderr)
+        print('',file=stderr)
         
 class Cell:
 
@@ -70,6 +70,7 @@ class Robot:
 
         # Ver posição a norte
         self.verifica_cor(matriz, us)
+        print("Verificou cor", file=stderr)
         self.vira_direita()
 
         voice.speak("Can I check?")
@@ -123,41 +124,48 @@ class Robot:
 
         cor = self.cor_rgb()
         
-        if cor == "black" :
-            steer_pair.off()
+        while cor != 'black' or cor != 'red' :
+            cor = self.cor_rgb()
+
+            if cor == 'black' :
+                steer_pair.off()
+
+                voice.speak("Reading")
+                sleep(1)
+                if self.deteta_ovelha(us):
+                    self.assinala_ovelha(matriz)
+                    voice.speak("Sheep here")
+                    sleep(1)
+
+                self.move_atras()
+                break
             
-            voice.speak("Searching!")
-            if self.deteta_ovelha(us):
-                self.assinala_ovelha(matriz)
-                voice.speak("Sheep!")
-            sleep(1)
+            if cor == 'red' :
+                steer_pair.off()
+                self.assinala_parede(matriz)
 
-            cor = 'white'
-            self.move_atras()
-
-        if cor == "red" :
-            steer_pair.off()
-            self.assinala_parede(matriz)
-
-            if self.deteta_ovelha(us) :
-                self.assinala_ovelha(matriz)
-                voice.speak("Sheep!")
-            sleep(1)
-
-            cor = 'white'
-            self.move_atras()
+                voice.speak("Reading")
+                sleep(1)
+                if self.deteta_ovelha(us):
+                    self.assinala_ovelha(matriz)
+                    voice.speak("Sheep here")
+                    sleep(1)
+                
+                self.move_atras()
+                break
+        
 
     # ========= #
     # MOVIMENTO #
     # ========= #
 
     def vira_esquerda(self):
-        mv_dir.on_for_rotations(-25, 25, 0.7)
+        mv_dir.on_for_rotations(-25, 25, 1.3)
         self.ori_index -= 1
         self.orientacao = self.atualiza_orientacao()
     
     def vira_direita(self):
-        mv_dir.on_for_rotations(25,-25, 0.7)
+        mv_dir.on_for_rotations(25,-25, 1.3)
         self.ori_index += 1
         self.orientacao = self.atualiza_orientacao()
     
@@ -179,7 +187,6 @@ class Robot:
                 desvio_eixo_y(matriz)
             else:
                 # Move-se
-                print("Chegou ao else", file=stderr)
                 mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
                 # Atualiza posição
                 self.y_pos += 1
