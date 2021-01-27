@@ -63,38 +63,50 @@ class Robot:
         while(self.orientacao_robot != "Norte"):
             self.vira_direita()
 
-        voice.speak("Can I check?")
+        i = 0
+        while i < 4 :
+            voice.speak("Can I check?")
 
-        while not confirm.is_pressed:
-            pass
-
-        # Ver posição a norte
-        self.verifica_cor(matriz, us)
-        print("Verificou cor", file=stderr)
-        self.vira_direita()
-
-        voice.speak("Can I check?")
-        while not confirm.is_pressed:
-            pass
+            while not confirm.is_pressed:
+                pass
+            
+            self.verifica_cor(matriz, us)
+            self.vira_direita()
+            i += 1
         
-        # Ver posição a este
-        self.verifica_cor(matriz, us)
         self.vira_direita()
+            
+        # voice.speak("Can I check?")
 
-        voice.speak("Can I check?")
-        while not confirm.is_pressed:
-            pass
-        # Ver posição a sul
-        self.verifica_cor(matriz, us)
-        self.vira_direita()
+        # while not confirm.is_pressed:
+        #     pass
+
+        # # Ver posição a norte
+        # self.verifica_cor(matriz, us)
+        # self.vira_direita()
+
+        # voice.speak("Can I check?")
+        # while not confirm.is_pressed:
+        #     pass
         
-        voice.speak("Can I check?")
-        while not confirm.is_pressed:
-            pass
-        # Ver posição a oeste
-        self.verifica_cor(matriz, us)
-        # Voltar a norte
-        self.vira_direita()
+        # # Ver posição a este
+        # self.verifica_cor(matriz, us)
+        # self.vira_direita()
+
+        # voice.speak("Can I check?")
+        # while not confirm.is_pressed:
+        #     pass
+        # # Ver posição a sul
+        # self.verifica_cor(matriz, us)
+        # self.vira_direita()
+        
+        # voice.speak("Can I check?")
+        # while not confirm.is_pressed:
+        #     pass
+        # # Ver posição a oeste
+        # self.verifica_cor(matriz, us)
+        # # Voltar a norte
+        # self.vira_direita()
 
     # ============= #
     # LEITURA CORES #
@@ -169,22 +181,22 @@ class Robot:
         self.ori_index += 1
         self.orientacao = self.atualiza_orientacao()
     
+    def move_atras(self):
+        mv_dir.on_for_rotations(-25,-25, 0.7)
+    
     def move_frente(self, matriz):
-        prox_pos_y = matriz[self.y_pos + 1][self.x_pos]
-        prox_pos_x = matriz[self.y_pos][self.x_pos + 1]
-        pos_ant_y = matriz[self.y_pos - 1][self.x_pos]
-        pos_ant_y = matriz[self.y_pos][self.x_pos - 1]
+        pos_atual = matriz[self.y_pos][self.x_pos]
         
-        voice.speak("Confirm")
+        voice.speak("Confirm movement")
         while not confirm.is_pressed:
             pass
         
         if(self.orientacao_robot == "Norte"):
 
-            if prox_pos_y.parede_abaix == True:
+            if pos_atual.parede_acim == True:
                 print("Tem parede a Norte!", file=stderr)
                 # Rotina de desvio
-                desvio_eixo_y(matriz)
+                # desvio_eixo_y(matriz)
             else:
                 # Move-se
                 mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
@@ -193,10 +205,10 @@ class Robot:
 
         if(self.orientacao_robot == "Este"):
 
-            if prox_pos_x.parede_esq == True:
+            if pos_atual.parede_dir == True:
                 print("Tem parede a Este!", file=stderr)
                 # Rotina de desvio
-                desvio_eixo_x(matriz)
+                # desvio_eixo_x(matriz)
             else:
                 # Move-se
                 mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
@@ -205,10 +217,10 @@ class Robot:
 
         if(self.orientacao_robot == "Sul"):
 
-            if pos_ant_y.parede_acim == True:
+            if pos_atual.parede_abaix == True:
                 print("Tem parede a Sul!", file=stderr)
                 # Rotina de desvio
-                desvio_eixo_y(matriz)
+                # desvio_eixo_y(matriz)
             else:
                 # Move-se
                 mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
@@ -217,54 +229,15 @@ class Robot:
 
         if(self.orientacao_robot == "Oeste"):
 
-            if pos_ant_x.parede_esq == True:
+            if pos_atual.parede_esq == True:
                 print("Tem parede a Oeste!", file=stderr)
                 # Rotina de desvio
-                desvio_eixo_x(matriz)
+                # desvio_eixo_x(matriz)
             else:
                 # Move-se
                 mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
                 # Atualiza posição
                 self.x_pos -= 1
-    
-    def desvio_eixo_y(self, matriz):
-
-        if(self.orientacao_robot == "Norte" and self.x_pos == 0):
-            self.vira_direita()
-            self.move_frente(matriz)
-
-        if(self.orientacao_robot == "Norte" and self.x_pos > 0 and self.x_pos < 5):
-            self.vira_direita()
-            self.move_frente(matriz)
-        
-        if(self.orientacao_robot == "Sul" and self.x_pos == 5):
-            self.vira_esquerda()
-            self.move_frente(matriz)    
-
-        if(self.orientacao_robot == "Sul" and self.x_pos < 5 and self.x_pos > 0):
-            self.vira_esquerda()
-            self.move_frente(matriz)    
-
-    def desvio_eixo_y(self, matriz):
-
-        if(self.orientacao_robot == "Oeste" and self.y_pos == 0):
-            self.vira_direita()
-            self.move_frente(matriz)
-
-        if(self.orientacao_robot == "Oeste" and self.y_pos > 0 and self.y_pos < 5):
-            self.vira_direita()
-            self.move_frente(matriz)
-        
-        if(self.orientacao_robot == "Este" and self.y_pos == 5):
-            self.vira_esquerda()
-            self.move_frente(matriz)    
-
-        if(self.orientacao_robot == "Este" and self.y_pos < 5 and self.y_pos > 0):
-            self.vira_esquerda()
-            self.move_frente(matriz)   
-
-    def move_atras(self):
-        mv_dir.on_for_rotations(-25,-25, 0.7)
 
     def desloca_y(self, y_destino, matriz):
         
@@ -383,14 +356,10 @@ det_touch = TouchSensor(INPUT_3)
 us.mode = 'US-DIST-CM'
 units = us.units
 
-jg = Jogo()
 jg.preenche_matriz()
 jg.imprime_matriz()
-rb = Robot()
 rb.desloca_para_coordenada(3, 3, jg.matriz)
-# jg.assinala_parede_abaix(1, 0)
-# print("\n")
-# jg.imprime_matriz()
-# print("\n")
-# rb.move_frente(jg.matriz)
-# jg.imprime_matriz()
+
+
+while(jg.n_ovelhas > 0):
+    # Heurística
