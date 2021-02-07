@@ -75,38 +75,6 @@ class Robot:
             i += 1
         
         self.vira_direita()
-            
-        # voice.speak("Can I check?")
-
-        # while not confirm.is_pressed:
-        #     pass
-
-        # # Ver posição a norte
-        # self.verifica_cor(matriz, us)
-        # self.vira_direita()
-
-        # voice.speak("Can I check?")
-        # while not confirm.is_pressed:
-        #     pass
-        
-        # # Ver posição a este
-        # self.verifica_cor(matriz, us)
-        # self.vira_direita()
-
-        # voice.speak("Can I check?")
-        # while not confirm.is_pressed:
-        #     pass
-        # # Ver posição a sul
-        # self.verifica_cor(matriz, us)
-        # self.vira_direita()
-        
-        # voice.speak("Can I check?")
-        # while not confirm.is_pressed:
-        #     pass
-        # # Ver posição a oeste
-        # self.verifica_cor(matriz, us)
-        # # Voltar a norte
-        # self.vira_direita()
 
     # ============= #
     # LEITURA CORES #
@@ -187,97 +155,69 @@ class Robot:
     def move_frente(self, matriz):
         pos_atual = matriz[self.y_pos][self.x_pos]
         
-        voice.speak("Confirm movement")
-        while not confirm.is_pressed:
-            pass
-        
         if(self.orientacao_robot == "Norte"):
 
-            if pos_atual.parede_acim == True:
-                print("Tem parede a Norte!", file=stderr)
-                # Rotina de desvio
-                # desvio_eixo_y(matriz)
-            else:
-                # Move-se
-                mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
-                # Atualiza posição
-                self.y_pos += 1
+            mv_dir.on_for_rotations(25,25, ROTACOES_CASA)       
+            self.y_pos += 1
 
         if(self.orientacao_robot == "Este"):
 
-            if pos_atual.parede_dir == True:
-                print("Tem parede a Este!", file=stderr)
-                # Rotina de desvio
-                # desvio_eixo_x(matriz)
-            else:
-                # Move-se
-                mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
-                # Atualiza posição
-                self.x_pos += 1
+            mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
+            self.x_pos += 1
 
         if(self.orientacao_robot == "Sul"):
 
-            if pos_atual.parede_abaix == True:
-                print("Tem parede a Sul!", file=stderr)
-                # Rotina de desvio
-                # desvio_eixo_y(matriz)
-            else:
-                # Move-se
-                mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
-                # Atualiza posição
-                self.y_pos -= 1
+            mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
+            self.y_pos -= 1
 
         if(self.orientacao_robot == "Oeste"):
 
-            if pos_atual.parede_esq == True:
-                print("Tem parede a Oeste!", file=stderr)
-                # Rotina de desvio
-                # desvio_eixo_x(matriz)
-            else:
-                # Move-se
-                mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
-                # Atualiza posição
-                self.x_pos -= 1
-
-    def desloca_y(self, y_destino, matriz):
-        
-        while(self.y_pos < y_destino):
-
-            while(self.orientacao_robot != "Norte"):
-                self.vira_direita()
-
-            self.verifica_periferia(matriz)
-            self.move_frente(matriz)
-        
-
-        while(self.y_pos > y_destino):
-
-            while(self.orientacao_robot != "Sul"):
-                self.vira_direita()
-
-            self.verifica_periferia(matriz)
-            self.move_frente(matriz)
+            mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
+            self.x_pos -= 1
     
-    def desloca_x(self, x_destino, matriz):
-        while(self.x_pos < x_destino):
+    def move_acima(self, matriz):
+        self.confirma_movimento()
 
-            while(self.orientacao_robot != "Este"):
-                self.vira_direita()
+        while(self.orientacao_robot != "Norte"):
+            self.vira_direita()
+        
+        self.move_frente(matriz)
 
-            self.verifica_periferia(matriz)
-            self.move_frente(matriz)
 
-        while(self.x_pos > x_destino):
+    def move_dir(self, matriz):
+        self.confirma_movimento()
 
-            while(self.orientacao_robot != "Oeste"):
-                self.vira_direita()
-
-            self.verifica_periferia(matriz)
-            self.move_frente(matriz)
+        while(self.orientacao_robot != "Este"):
+            self.vira_direita()
+        
+        self.move_frente(matriz)
     
-    def desloca_para_coordenada(self, x_destino, y_destino, matriz):
-        self.desloca_y(y_destino, matriz)
-        self.desloca_x(x_destino, matriz)
+    def move_esq(self, matriz):
+        self.confirma_movimento()
+
+        while(self.orientacao_robot != "Oeste"):
+            self.vira_direita()
+        
+        self.move_frente(matriz)
+
+    def move_abaix(self, matriz):
+        self.confirma_movimento()
+
+        while(self.orientacao_robot != "Sul"):
+            self.vira_direita()
+        
+        self.move_frente(matriz)
+
+    def move_l_acima(self, matriz):
+        self.confirma_movimento()
+        self.move_dir(matriz)
+        robot.verifica_periferia(matriz)
+        self.move_acima(matriz)
+    
+    def move_l_abaixo(self, matriz):
+        self.confirma_movimento()
+        self.move_dir(matriz)
+        self.move_abaixo(matriz)
 
     #   □ □ <-- Tentando visualizar, se existir uma parede de uma célula para outra, precisamos de assinalar duas paredes (pois cada célula tem 4 paredes)
     #   No caso da parede à esquerda, na célula imediata existe uma parede à esquerda, e para a célula seguinte [x_pos - 1] existe uma parede à direita
@@ -332,6 +272,40 @@ class Robot:
         if distance < 20:
             return True
 
+    # VERIFICA SE PODE MOVER PARA A POSIÇÃO
+    def pode_mover_acima(self, matriz):
+        pos_atual = matriz[self.y_pos][self.x_pos]
+        prox_pos = matriz[self.y_pos + 1][self.x_pos]
+
+        if pos_atual.parede_acim or prox_pos.conteudo == "0" or prox_pos > 5: 
+            return False
+
+    def pode_mover_dir(self, matriz):
+        pos_atual = matriz[self.y_pos][self.x_pos]
+        prox_pos = matriz[self.y_pos][self.x_pos + 1]
+
+        if pos_atual.parede_dir or prox_pos.conteudo == "0" or prox_pos > 5:
+            return False
+
+    def pode_mover_abaixo(self, matriz):
+        pos_atual = matriz[self.y_pos][self.x_pos]
+        prox_pos = matriz[self.y_pos - 1][self.x_pos]
+
+        if pos_atual.parede_abaix or prox_pos.conteudo == "0" or prox_pos < 0:
+            return False
+    
+    def pode_mover_esq(self, matriz):
+        pos_atual = matriz[self.y_pos][self.x_pos]
+        prox_pos = matriz[self.y_pos][self.x_pos - 1]
+
+        if pos_atual.parede_esq or prox_pos.conteudo == "0" or prox_pos > 0:
+            return False
+    
+    def confirma_movimento(self):
+        voice.speak("Confirm movement")
+        while not confirm.is_pressed:
+            pass
+
 # Criação de constantes
 ROTACOES_CASA = 2.1
 MOTOR_ESQ = OUTPUT_D
@@ -358,8 +332,6 @@ units = us.units
 
 jg.preenche_matriz()
 jg.imprime_matriz()
-rb.desloca_para_coordenada(3, 3, jg.matriz)
-
 
 while(jg.n_ovelhas > 0):
     # Heurística
