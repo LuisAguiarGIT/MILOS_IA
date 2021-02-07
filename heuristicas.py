@@ -10,38 +10,32 @@ def modo_scan(robot, jogo):
             robot.verifica_periferia(matriz)
 
         # Falta ver se foi visitado anteriormente
-        else if(robot.pode_mover_dir(matriz) ):
+        if(robot.pode_mover_dir(matriz) ):
             robot.move_dir(matriz)
-            robot.verifica_periferia(matriz)
 
         # Falta ver se foi visitado anteriormente
         else if(robot.pode_mover_esq(matriz)):
             robot.move_esq(matriz)
-            robot.verifica_periferia(matriz)
         
         # Falta ver se foi visitado anteriormente
         else if(robot.pode_mover_acima(matriz) ):
             robot.move_acima(matriz)
-            robot.verifica_periferia(matriz)
         
         else if(robot.pode_mover_dir(matriz)
         and not robot.pode_mover_esq(matriz)
         and not robot.pode_mover_acima(matriz)):
             robot.move_l_acima(matriz)
-            robot.verifica_periferia(matriz)
-        
+            
         else if(robot.pode_mover_esq(matriz)):
             robot.move_esq(matriz)
-            robot.verifica_periferia(matriz)
         
         else if(robot.pode_mover_abaixo(matriz)):
             robot.move_abaix(matriz)
-            robot.verifica_periferia(matriz)
         
         else:
             print("Impossível!", file=stderr)
             break
-    
+
 
 def position_at(y,x):
     return (if robot.y_pos == y and robot.x_pos == x)

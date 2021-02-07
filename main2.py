@@ -50,10 +50,11 @@ class Robot:
     def __init__(self):
         self.x_pos = 0
         self.y_pos = 0
+        self.pos_ant = [0,0]
         self.orientacoes = ["Norte", "Este", "Sul", "Oeste"]
         self.ori_index = 0
         self.orientacao_robot = self.orientacoes[self.ori_index]
-        self.jogadas = 2
+        # self.jogadas = 2
 
     def atualiza_orientacao(self):
         self.orientacao_robot = self.orientacoes[self.ori_index % len(self.orientacoes)]
@@ -157,25 +158,30 @@ class Robot:
         
         if(self.orientacao_robot == "Norte"):
 
-            mv_dir.on_for_rotations(25,25, ROTACOES_CASA)       
+            mv_dir.on_for_rotations(25,25, ROTACOES_CASA)   
+            self.pos_ant[0] = y_pos    
             self.y_pos += 1
 
         if(self.orientacao_robot == "Este"):
 
             mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
+            self.pos_ant[1] = x_pos    
             self.x_pos += 1
 
         if(self.orientacao_robot == "Sul"):
 
             mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
+            self.pos_ant[0] = y_pos    
             self.y_pos -= 1
 
         if(self.orientacao_robot == "Oeste"):
 
             mv_dir.on_for_rotations(25,25, ROTACOES_CASA)
+            self.pos_ant[1] = x_pos  
             self.x_pos -= 1
     
     def move_acima(self, matriz):
+        self.verifica_periferia(matriz)
         self.confirma_movimento()
 
         while(self.orientacao_robot != "Norte"):
@@ -183,8 +189,8 @@ class Robot:
         
         self.move_frente(matriz)
 
-
     def move_dir(self, matriz):
+        self.verifica_periferia(matriz)
         self.confirma_movimento()
 
         while(self.orientacao_robot != "Este"):
@@ -193,6 +199,7 @@ class Robot:
         self.move_frente(matriz)
     
     def move_esq(self, matriz):
+        self.verifica_periferia(matriz)
         self.confirma_movimento()
 
         while(self.orientacao_robot != "Oeste"):
@@ -201,6 +208,7 @@ class Robot:
         self.move_frente(matriz)
 
     def move_abaix(self, matriz):
+        self.verifica_periferia(matriz)
         self.confirma_movimento()
 
         while(self.orientacao_robot != "Sul"):
@@ -211,12 +219,13 @@ class Robot:
     def move_l_acima(self, matriz):
         self.confirma_movimento()
         self.move_dir(matriz)
-        robot.verifica_periferia(matriz)
+        self.verifica_periferia(matriz)
         self.move_acima(matriz)
     
     def move_l_abaixo(self, matriz):
         self.confirma_movimento()
         self.move_dir(matriz)
+        self.verifica_periferia(matriz)
         self.move_abaixo(matriz)
 
     #   □ □ <-- Tentando visualizar, se existir uma parede de uma célula para outra, precisamos de assinalar duas paredes (pois cada célula tem 4 paredes)
@@ -277,29 +286,29 @@ class Robot:
         pos_atual = matriz[self.y_pos][self.x_pos]
         prox_pos = matriz[self.y_pos + 1][self.x_pos]
 
-        if pos_atual.parede_acim or prox_pos.conteudo == "0" or prox_pos > 5: 
-            return False
+        if not pos_atual.parede_acim or not prox_pos.conteudo == "0" or not prox_pos > 5: 
+            return True
 
     def pode_mover_dir(self, matriz):
         pos_atual = matriz[self.y_pos][self.x_pos]
         prox_pos = matriz[self.y_pos][self.x_pos + 1]
 
-        if pos_atual.parede_dir or prox_pos.conteudo == "0" or prox_pos > 5:
-            return False
+        if not pos_atual.parede_dir or not prox_pos.conteudo == "0" or not prox_pos > 5:
+            return True
 
     def pode_mover_abaixo(self, matriz):
         pos_atual = matriz[self.y_pos][self.x_pos]
         prox_pos = matriz[self.y_pos - 1][self.x_pos]
 
-        if pos_atual.parede_abaix or prox_pos.conteudo == "0" or prox_pos < 0:
-            return False
+        if not pos_atual.parede_abaix or not prox_pos.conteudo == "0" or not prox_pos < 0:
+            return True
     
     def pode_mover_esq(self, matriz):
         pos_atual = matriz[self.y_pos][self.x_pos]
         prox_pos = matriz[self.y_pos][self.x_pos - 1]
 
-        if pos_atual.parede_esq or prox_pos.conteudo == "0" or prox_pos > 0:
-            return False
+        if not pos_atual.parede_esq or not prox_pos.conteudo == "0" or not prox_pos > 0:
+            return True
     
     def confirma_movimento(self):
         voice.speak("Confirm movement")
