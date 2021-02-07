@@ -286,28 +286,28 @@ class Robot:
         pos_atual = matriz[self.y_pos][self.x_pos]
         prox_pos = matriz[self.y_pos + 1][self.x_pos]
 
-        if not pos_atual.parede_acim or not prox_pos.conteudo == "0" or not prox_pos > 5: 
+        if not pos_atual.parede_acim and not prox_pos.conteudo == "0" and not prox_pos > 5: 
             return True
 
     def pode_mover_dir(self, matriz):
         pos_atual = matriz[self.y_pos][self.x_pos]
         prox_pos = matriz[self.y_pos][self.x_pos + 1]
 
-        if not pos_atual.parede_dir or not prox_pos.conteudo == "0" or not prox_pos > 5:
+        if not pos_atual.parede_dir and not prox_pos.conteudo == "0" and not prox_pos > 5:
             return True
 
     def pode_mover_abaixo(self, matriz):
         pos_atual = matriz[self.y_pos][self.x_pos]
         prox_pos = matriz[self.y_pos - 1][self.x_pos]
 
-        if not pos_atual.parede_abaix or not prox_pos.conteudo == "0" or not prox_pos < 0:
+        if not pos_atual.parede_abaix and not prox_pos.conteudo == "0" and not prox_pos < 0:
             return True
     
     def pode_mover_esq(self, matriz):
         pos_atual = matriz[self.y_pos][self.x_pos]
         prox_pos = matriz[self.y_pos][self.x_pos - 1]
 
-        if not pos_atual.parede_esq or not prox_pos.conteudo == "0" or not prox_pos > 0:
+        if not pos_atual.parede_esq and not prox_pos.conteudo == "0" and not prox_pos > 0:
             return True
     
     def confirma_movimento(self):
