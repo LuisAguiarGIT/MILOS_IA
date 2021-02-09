@@ -1,60 +1,19 @@
-#!/usr/bin/env python3
-# BIBLIOTECAS #
-from time import sleep
-from array import *
-from collections import OrderedDict
-
-from ev3dev2.motor import LargeMotor, OUTPUT_D, OUTPUT_C, SpeedRPS, MoveTank, MoveSteering
-from ev3dev2.sensor import INPUT_3, INPUT_4
-from ev3dev2.sensor.lego import TouchSensor, UltrasonicSensor, ColorSensor
-from ev3dev2.sound import Sound
-from sys import stderr
-
-# import heuristicas.py
-
-# =============================================================================== #
-# ASPETOS GERAIS DO JOGO / ROBOT                                                  #
-# =============================================================================== #
-# 0 indica que existe uma ovelha na célula, True indica que existe uma parede
-
-class Jogo:
-
-    def __init__(self):
-        self.n_ovelhas = 2
-        self.matriz = []
-    
-    def preenche_matriz(self):
-        for x in range(6):
-            lista_interior = []
-            for y in range(6):
-                lista_interior.append(Cell())
-            self.matriz.append(lista_interior)
-    
-    def imprime_matriz(self):
-        for listas in self.matriz:
-            for i in listas:
-                print(i.conteudo, end='\t', file=stderr)
-        print('',file=stderr)
-        
-class Cell:
-
-    def __init__(self):
-        self.parede_esq = False
-        self.parede_acim = False
-        self.parede_dir = False
-        self.parede_abaix = False
-        self.conteudo = "#"
-
 class Robot:
 
     def __init__(self):
         self.x_pos = 0
         self.y_pos = 0
-        self.pos_ant = [0,0]
         self.orientacoes = ["Norte", "Este", "Sul", "Oeste"]
         self.ori_index = 0
         self.orientacao_robot = self.orientacoes[self.ori_index]
         # self.jogadas = 2
+
+        # SCAN DA MATRIZ
+        self.direcao_desejada = "Direita"
+        self.pos_ant = [0,0]
+        self.retrocede = False
+        self.movendo_acima = False
+        self.movendo_abaixo = False 
 
     def atualiza_orientacao(self):
         self.orientacao_robot = self.orientacoes[self.ori_index % len(self.orientacoes)]
@@ -207,7 +166,7 @@ class Robot:
         
         self.move_frente(matriz)
 
-    def move_abaix(self, matriz):
+    def move_abaixo(self, matriz):
         self.verifica_periferia(matriz)
         self.confirma_movimento()
 
@@ -314,33 +273,3 @@ class Robot:
         voice.speak("Confirm movement")
         while not confirm.is_pressed:
             pass
-
-# Criação de constantes
-ROTACOES_CASA = 2.1
-MOTOR_ESQ = OUTPUT_D
-MOTOR_DIR = OUTPUT_C
-VELOCIDADE_PROCURA = 20
-# Criação dos objetos
-
-# Programa
-jg = Jogo()
-rb = Robot()
-
-# Sensores/ Robot
-voice = Sound()
-us = UltrasonicSensor()
-steer_pair = MoveSteering(OUTPUT_D, OUTPUT_C)
-mv_dir = MoveTank(MOTOR_ESQ, MOTOR_DIR)
-cl = ColorSensor()
-confirm = TouchSensor(INPUT_4)
-det_touch = TouchSensor(INPUT_3)
-
-# Atribuição de modos aos sensores 
-us.mode = 'US-DIST-CM'
-units = us.units
-
-jg.preenche_matriz()
-jg.imprime_matriz()
-
-while(jg.n_ovelhas > 0):
-    # Heurística
