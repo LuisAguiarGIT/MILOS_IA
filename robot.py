@@ -6,7 +6,6 @@ class Robot:
         self.orientacoes = ["Norte", "Este", "Sul", "Oeste"]
         self.ori_index = 0
         self.orientacao_robot = self.orientacoes[self.ori_index]
-        # self.jogadas = 2
 
         # SCAN DA MATRIZ
         self.direcao_desejada = "Direita"
@@ -14,6 +13,11 @@ class Robot:
         self.retrocede = False
         self.movendo_acima = False
         self.movendo_abaixo = False 
+
+        # MODO PASTOR
+        self.ultima_acao = None 
+        self.direcao_seguir = None
+        self.esperando = False
 
     def atualiza_orientacao(self):
         self.orientacao_robot = self.orientacoes[self.ori_index % len(self.orientacoes)]
@@ -140,7 +144,6 @@ class Robot:
             self.x_pos -= 1
     
     def move_acima(self, matriz):
-        self.verifica_periferia(matriz)
         self.confirma_movimento()
 
         while(self.orientacao_robot != "Norte"):
@@ -149,7 +152,6 @@ class Robot:
         self.move_frente(matriz)
 
     def move_dir(self, matriz):
-        self.verifica_periferia(matriz)
         self.confirma_movimento()
 
         while(self.orientacao_robot != "Este"):
@@ -158,16 +160,12 @@ class Robot:
         self.move_frente(matriz)
     
     def move_esq(self, matriz):
-        self.verifica_periferia(matriz)
-        self.confirma_movimento()
-
         while(self.orientacao_robot != "Oeste"):
             self.vira_direita()
         
         self.move_frente(matriz)
 
     def move_abaixo(self, matriz):
-        self.verifica_periferia(matriz)
         self.confirma_movimento()
 
         while(self.orientacao_robot != "Sul"):
@@ -175,17 +173,33 @@ class Robot:
         
         self.move_frente(matriz)
 
-    def move_l_acima(self, matriz):
-        self.confirma_movimento()
-        self.move_dir(matriz)
-        self.verifica_periferia(matriz)
-        self.move_acima(matriz)
+    def dentro_de_limites(posX, posY):
+        return (
+            (posX >= 0 and posX <= 5) and (posY >= 0 and posY <= 5)
+        )
+
+    def prox_dentro_de_limites(posX, posY, direcao):
+        if not self.dentro_de_limites(posX, posY):
+            return False
+        
+        if direcao = "Direita":
+            return self.dentro_de_limites(posX + 1, posY)
+        
+        if direcao = "Esquerda":
+            return self.dentro_de_limites(posX - 1, posY)
+        
+
+    # def move_l_acima(self, matriz):
+    #     self.confirma_movimento()
+    #     self.move_dir(matriz)
+    #     self.verifica_periferia(matriz)
+    #     self.move_acima(matriz)
     
-    def move_l_abaixo(self, matriz):
-        self.confirma_movimento()
-        self.move_dir(matriz)
-        self.verifica_periferia(matriz)
-        self.move_abaixo(matriz)
+    # def move_l_abaixo(self, matriz):
+    #     self.confirma_movimento()
+    #     self.move_dir(matriz)
+    #     self.verifica_periferia(matriz)
+    #     self.move_abaixo(matriz)
 
     #   □ □ <-- Tentando visualizar, se existir uma parede de uma célula para outra, precisamos de assinalar duas paredes (pois cada célula tem 4 paredes)
     #   No caso da parede à esquerda, na célula imediata existe uma parede à esquerda, e para a célula seguinte [x_pos - 1] existe uma parede à direita
@@ -241,6 +255,10 @@ class Robot:
             return True
 
     # VERIFICA SE PODE MOVER PARA A POSIÇÃO
+    def pode_mover(self, matriz):
+        if(this.pode_mover_acima(matriz) or this.pode_mover_dir(matriz) or this.pode_mover_abaixo(matriz) or this.pode_mover_esq(matriz)):
+            return True
+
     def pode_mover_acima(self, matriz):
         pos_atual = matriz[self.y_pos][self.x_pos]
         prox_pos = matriz[self.y_pos + 1][self.x_pos]

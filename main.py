@@ -39,6 +39,12 @@ class Jogo:
             out += "\n"
         
         print(out, file=stderr)
+    
+    def reset_visitado(self):
+        for listas in self.matriz:
+            for i in listas:
+                i.visitado = False
+
         
 class Cell:
 
