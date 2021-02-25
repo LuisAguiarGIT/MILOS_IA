@@ -267,6 +267,46 @@ def modo_volta_inicio(robot, jogo):
     print("ERRO FATAL, TERMINANDO..", file=stderr)
     break
 
+def modo_pastor(robot, matriz):
+    print("MODO PASTOR..", file=stderr)
+
+    # Esperando, acaba turno
+    if robot.esperando:
+        robot.esperando = False
+    
+    # Seguindo ovelhas
+
+    if robot.direcao_seguir != None:
+        # Função que busca célula na direção desejada
+
+        if #variável com a célula para seguir:
+            # Moveu a ovelha no turno anterior mas o mesmo não se moveu
+            if #variavel and proxima posicao tem ovelha:
+                robot.ultima_acao = None
+                robot.esperando = True
+
+                if(robot.pode_mover_esq(matriz)):
+                    print("OVELHA PRESA, MOVENDO PARA A ESQUERDA..", file=stderr)
+                    robot.move_esquerda(matriz)
+                    return
+                
+                if(robot.pode_mover_abaixo(matriz)):
+                    print("OVELHA PRESA, MOVENDO ABAIXO..", file=stderr)
+                    robot.move_abaixo(matriz)
+                    return
+                
+                if(robot.pode_mover_direita(matriz)):
+                    print("OVELHA PRESA, MOVENDO PARA A DIREITA..", file=stderr)
+                    robot.move_direita(matriz)
+                    return
+                
+                print("ERRO FATAL, NÃO CONSEGUE MOVER..", file=stderr)
+                return
+
+        # Movemos a ação no último turno, seguindo
+        robot.ultima_acao = null       
+
+    # TODO
 # def modo_volta_inicio(robot, jogo):
 #     matriz = jogo.matriz
 #     rb_pos = matriz[robot.y_pos][robot.x_pos]
