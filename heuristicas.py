@@ -37,6 +37,7 @@ def modo_scan(robot, jogo):
         robot.ultima_acao = None
         robot.direcao_seguir = None
         robot.esperando = False
+        modo_pastor(robot, matriz)
 
         return
 
@@ -166,6 +167,7 @@ def modo_volta_inicio(robot, jogo):
         robot.direcao_seguir = None
         robot.esperando = False
 
+        modo_pastor(robot, matriz)
         return
 
     # 4 - Verificação retroceder
@@ -262,11 +264,11 @@ def modo_pastor(robot, matriz):
     # Seguindo ovelhas
 
     if robot.direcao_seguir != None:
-        # Função que busca célula na direção desejada
+        celula_seguir = robot.busca_celula_direcao(matriz, robot.direcao_seguir)
 
-        if #variável com a célula para seguir:
+        if celula_seguir:
             # Moveu a ovelha no turno anterior mas o mesmo não se moveu
-            if #variavel and proxima posicao tem ovelha:
+            if celula_seguir and celula_seguir.conteudo == 0:
                 robot.ultima_acao = None
                 robot.esperando = True
 
@@ -289,7 +291,66 @@ def modo_pastor(robot, matriz):
                 return
 
         # Movemos a ação no último turno, seguindo
-        robot.ultima_acao = null       
+        robot.ultima_acao = None  
+
+        if pode_mover_direcao(robot, robot.direcao_seguir):
+            mover_direcao(robot, matriz, robot.direcao_seguir)
+
+            if pode_mover_direcao(robot, robot.direcao_seguir):
+                mover_direcao(robot, matriz, robot.direcao_seguir)
+        
+        robot.direcao_Seguir = None
+
+    rb_pos_acima = matriz[robot.y_pos + 1][robot.x_pos]
+    rb_pos_direita = matriz[robot.y_pos][robot.x_pos + 1]
+
+    if(rb_pos_acima.conteudo == 0 and rb_pos_direita.conteudo == 0):
+        rb_pos_abaixo = matriz[robot.y_pos - 1][robot.x_pos]
+        rb_pos_esquerda = matriz[robot.y_pos][robot.x_pos - 1]
+
+        if rb_pos_acima.conteudo == 0:
+            # GRITO
+        
+        if rb_pos_direita.conteudo == 0:
+            # GRITO
+        
+        if rb_pos_abaixo.conteudo == 0:
+            # GRITO
+        
+        if rb_pos_esquerda.conteudo == 0:
+            # GRITO
+
+        return
+
+    if rb_pos_acima and rb_pos_acima.conteudo == 0:
+        print("OVELHA ACIMA, EMPURRANDO..", file=stderr)
+        robot.ultima_acao = "Empurrar"
+        robot.direcao_seguir = "Acima"
+
+        # EMPURRA ACIMA
+
+        return
+    
+    if rb_pos_direita and rb_pos_direita.conteudo == 0:
+        print("OVELHA DIREITA, EMPURRANDO..", file=stderr)
+        robot.ultima_acao = "Empurrar"
+        robot.direcao_seguir = "Direita"
+
+        # EMPURRA DIREITA
+
+        return
+
+    print("OVELHAS NÃO ENCONTRADAS, TROCANDO PARA SCAN..", file=stderr)
+
+    robot.reset_visitado()
+    robot.direcao_desejada = "Direita"
+    robot.retrocede = False
+    robot.movendo_acima = False
+    robot.movendo_abaixo = False
+
+    modo_scan(robot, jogo)
+    return
+
 
 # def pode_mover_desejado_esquerda(robot):
 #     if robot.direcao_desejada == "Esquerda" and robot.pode_mover_esq(matriz):

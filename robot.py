@@ -294,4 +294,11 @@ class Robot:
             pass
 
     def busca_celula_direcao(self, matriz, direcao):
-        if(direcao == "Acima")
+        if(direcao == "Acima"):
+            return matriz[y_pos + 1][x_pos]
+        if(direcao == "Direita"):
+            return matriz[y_pos][x_pos + 1]
+        if(direcao == "Abaixo"):
+            return matriz[y_pos - 1][x_pos]
+        if(direcao == "Esquerda"):
+            return matriz[y_pos][x_pos - 1]
