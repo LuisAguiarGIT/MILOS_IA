@@ -9,8 +9,9 @@ class Robot:
 
         # SCAN DA MATRIZ
         self.direcao_desejada = "Direita"
-        self.pos_ant = [0,0]
+        self.pos_ant = [None,None]
         self.retrocede = False
+        self.retrocedeDirecaoTrocado = False
         self.movendo_acima = False
         self.movendo_abaixo = False 
 
@@ -291,3 +292,6 @@ class Robot:
         voice.speak("Confirm movement")
         while not confirm.is_pressed:
             pass
+
+    def busca_celula_direcao(self, matriz, direcao):
+        if(direcao == "Acima")

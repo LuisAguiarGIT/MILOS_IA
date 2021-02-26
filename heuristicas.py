@@ -41,45 +41,45 @@ def modo_scan(robot, jogo):
         return
 
     # 4 - Verificação retroceder
-    if(linha_diferente(robot)):
+    if(robot.pos_ant[1] != None and linha_diferente(robot)):
+        print("RETROCEDENDO...", file=stderr)
         robot.retrocede = True
     
     # 5 - Retrocedendo
     if(robot.retrocede):
-        troca_sentido(robot)
+        if not robot.retrocedeDirecaoTrocado:
+            troca_sentido(robot)
+            robot.retrocedeDirecaoTrocado = True
+        
         direcao = robot.direcao_desejada
 
-        if(direcao = "Esquerda" and pode_mover_desejado_esquerda(robot)):
-            robot.move_esq(matriz)
-            return
+        if(pode_mover_direcao(robot, direcao)):
+            print("MOVENDO NA DIREÇÃO DE RETROCEDE...", file=stderr)
+            mover_direcao(robot, matriz, direcao)
         
-        else if(direcao = "Direita" and pode_mover_desejado_direita(robot)):
-            robot.move_dir(matriz)
-            return
-        
-        else 
+        else:
+            print("ACABOU DE MOVER NA DIREÇÃO DE RETROCEDE...", file=stderr)
             troca_sentido(robot)
-            robot.retrocede = False
-            return
+            robot.retrocedeDirecaoTrocado = False
 
     # 6 - Células não visitadas abaixo
     if (dentro_de_limites(robot.x_pos, robot.y_pos - 1)) and (not rb_pos_abaixo.visitado):
+        print("CÉLULAS NÃO VISITADAS ABAIXO...", file=stderr)
         if robot.pode_mover_abaixo:
             robot.move_abaixo(matriz)
             return 
     
     # 7 - Obstáculo ou limite
-    if (robot.direcao_desejada == "Direita" and not pode_mover_desejado_direita(robot))
-     or (robot.direcao_desejada == "Esquerda" and not pode_mover_desejado_esquerda(robot)):
+    if (not pode_mover_direcao(robot, robot.direcao_desejada)):
         if robot.y_pos != 0:
             print("OBSTACULO, MOVENDO ACIMA...", file=stderr)
             robot.movendo_acima = True
         else if robot.y_pos != 5:
             print("OBSTACULO, MOVENDO ABAIXO...", file=stderr)
-            robot.movendo_abaixo = False
+            robot.movendo_abaixo = True
     
     # 8 - Limite
-    if ( robot.prox_dentro_de_limites(robot.x_pos, robot.y_pos, robot.direcao_desejada)):
+    if (not robot.prox_dentro_de_limites(robot.x_pos, robot.y_pos, robot.direcao_desejada)):
         print("NO LIMITE, INVERTENDO DIREÇÃO...", file=stderr)
         troca_sentido(robot)
     
@@ -100,21 +100,14 @@ def modo_scan(robot, jogo):
             return
     
     # 11 - Não pode mover na direção desejada
-    if not pode_mover_desejado(robot):
+    if not pode_mover_direcao(robot, robot.direcao_desejada):
         print("OBSTACULO, TROCANDO DIREÇÃO...", file=stderr)
         troca_sentido(robot)
     
     # 12 - Move numa direção desejada
-    if pode_mover_desejado(robot):
+    if pode_mover_direcao(robot, robot.direcao_desejada):
         print("MOVENDO NA DIREÇÃO DESEJADA...", file=stderr)
-        if robot.direcao_desejada == "Direita" and pode_mover_desejado_direita(robot):
-            robot.move_direita(matriz)
-            return
-        else if robot.direcao_desejada == "Esquerda" pode_mover_desejado_esquerda(robot):
-            robot.move_esquerda(matriz)
-            return
-        else 
-            return
+        mover_direcao(robot, matriz, robot.direcao_desejada)
 
     if robot.pode_mover_acima(matriz):
         robot.move_acima(matriz)
@@ -141,11 +134,11 @@ def modo_volta_inicio(robot, jogo):
 
     matriz = jogo.matriz
     rb_pos = matriz[robot.y_pos][robot.x_pos]
-    # rb_pos_abaixo = matriz[robot.y_pos - 1][robot.x_pos]
+    rb_pos_abaixo = matriz[robot.y_pos - 1][robot.x_pos]
 
     # 1 - Estamos no objetivo
     if na_posicao(0,0):
-        print("CHEGOU AO INÍCIO, TROCANDO PARA MODO SCAN...", file=stderr)
+        print("CHEGOU AO OBJETIVO, TROCANDO PARA SCAN...", file=stderr)
 
         # Inicializar
         robot.reset_visitado()
@@ -163,7 +156,6 @@ def modo_volta_inicio(robot, jogo):
     # 3 - Scan
     robot.verifica_periferia(matriz)
 
-    ############################# Atenção aqui
     rb_pos_acima = matriz[robot.y_pos + 1][robot.x_pos]
     rb_pos_direita = matriz[robot.y_pos][robot.x_pos + 1]
 
@@ -177,45 +169,45 @@ def modo_volta_inicio(robot, jogo):
         return
 
     # 4 - Verificação retroceder
-    if(linha_diferente(robot)):
+    if(robot.pos_ant[1] != None and linha_diferente(robot)):
+        print("RETROCEDENDO...", file=stderr)
         robot.retrocede = True
     
     # 5 - Retrocedendo
     if(robot.retrocede):
-        troca_sentido(robot)
+        if not robot.retrocedeDirecaoTrocado:
+            troca_sentido(robot)
+            robot.retrocedeDirecaoTrocado = True
+        
         direcao = robot.direcao_desejada
 
-        if(direcao = "Esquerda" and pode_mover_desejado_esquerda(robot)):
-            robot.move_esq(matriz)
-            return
+        if(pode_mover_direcao(robot, direcao)):
+            print("MOVENDO NA DIREÇÃO DE RETROCEDE...", file=stderr)
+            mover_direcao(robot, matriz, direcao)
         
-        else if(direcao = "Direita" and pode_mover_desejado_direita(robot)):
-            robot.move_dir(matriz)
-            return
-        
-        else 
+        else:
+            print("ACABOU DE MOVER NA DIREÇÃO DE RETROCEDE...", file=stderr)
             troca_sentido(robot)
-            robot.retrocede = False
-            return
+            robot.retrocedeDirecaoTrocado = False
 
     # 6 - Células não visitadas acima
-    if (dentro_de_limites(robot.x_pos, robot.y_pos - 1)) and (not rb_pos_acima.visitado):
+    if (dentro_de_limites(robot.x_pos, robot.y_pos + 1)) and (not rb_pos_acima.visitado):
+        print("CÉLULAS NÃO VISITADAS ABAIXO...", file=stderr)
         if robot.pode_mover_acima:
             robot.move_acima(matriz)
             return 
     
     # 7 - Obstáculo ou limite
-    if (robot.direcao_desejada == "Direita" and not pode_mover_desejado_direita(robot))
-     or (robot.direcao_desejada == "Esquerda" and not pode_mover_desejado_esquerda(robot)):
-        if robot.y_pos != 0:
+    if (not pode_mover_direcao(robot, robot.direcao_desejada)):
+        if robot.y_pos != 5:
+            print("OBSTACULO, MOVENDO ABAIXO...", file=stderr)
+            robot.movendo_abaixo = True
+        else if robot.y_pos != 0:
             print("OBSTACULO, MOVENDO ACIMA...", file=stderr)
             robot.movendo_acima = True
-        else if robot.y_pos != 5:
-            print("OBSTACULO, MOVENDO ABAIXO...", file=stderr)
-            robot.movendo_abaixo = False
     
     # 8 - Limite
-    if ( robot.prox_dentro_de_limites(robot.x_pos, robot.y_pos, robot.direcao_desejada)):
+    if (not robot.prox_dentro_de_limites(robot.x_pos, robot.y_pos, robot.direcao_desejada)):
         print("NO LIMITE, INVERTENDO DIREÇÃO...", file=stderr)
         troca_sentido(robot)
     
@@ -236,33 +228,26 @@ def modo_volta_inicio(robot, jogo):
             return
     
     # 11 - Não pode mover na direção desejada
-    if not pode_mover_desejado(robot):
+    if not pode_mover_direcao(robot, robot.direcao_desejada):
         print("OBSTACULO, TROCANDO DIREÇÃO...", file=stderr)
         troca_sentido(robot)
     
     # 12 - Move numa direção desejada
-    if pode_mover_desejado(robot):
+    if pode_mover_direcao(robot, robot.direcao_desejada):
         print("MOVENDO NA DIREÇÃO DESEJADA...", file=stderr)
-        if robot.direcao_desejada == "Direita" and pode_mover_desejado_direita(robot):
-            robot.move_direita(matriz)
-            return
-        else if robot.direcao_desejada == "Esquerda" pode_mover_desejado_esquerda(robot):
-            robot.move_esquerda(matriz)
-            return
-        else 
-            return
+        mover_direcao(robot, matriz, robot.direcao_desejada)
 
-    if robot.pode_mover_acima(matriz):
-        robot.move_acima(matriz)
-        robot.movendo_acima = False
-        robot.movendo_abaixo = False
-        return
+    # if robot.pode_mover_acima(matriz):
+    #     robot.move_acima(matriz)
+    #     robot.movendo_acima = False
+    #     robot.movendo_abaixo = False
+    #     return
     
-    if robot.pode_mover_abaixo(matriz):
-        robot.move_abaixo(matriz)
-        robot.movendo_acima = False
-        robot.movendo_abaixo = False
-        return
+    # if robot.pode_mover_abaixo(matriz):
+    #     robot.move_abaixo(matriz)
+    #     robot.movendo_acima = False
+    #     robot.movendo_abaixo = False
+    #     return
     
     print("ERRO FATAL, TERMINANDO..", file=stderr)
     break
@@ -306,99 +291,37 @@ def modo_pastor(robot, matriz):
         # Movemos a ação no último turno, seguindo
         robot.ultima_acao = null       
 
-    # TODO
-# def modo_volta_inicio(robot, jogo):
-#     matriz = jogo.matriz
-#     rb_pos = matriz[robot.y_pos][robot.x_pos]
-#     rb_pos_acima = matriz[robot.y_pos + 1][robot.x_pos]
+# def pode_mover_desejado_esquerda(robot):
+#     if robot.direcao_desejada == "Esquerda" and robot.pode_mover_esq(matriz):
+#         return True
 
-#     if na_posicao(0,0):
-#         #Salta para conduzir as ovelhas
+# def pode_mover_desejado_direita(robot):
+#     if robot.direcao_desejada == "Direita" and robot.pode_mover_dir(matriz):
+#         return True
 
-#     if(linha_diferente(robot)):
-#         robot.retrocede = True
-    
-#     if(robot.retrocede):
-#         troca_sentido(robot)
-        
-#         if(pode_mover_desejado_esquerda(robot)):
-#             robot.move_esq(matriz)
-#             return
-        
-#         else if(pode_mover_desejado_direita(robot)):
-#             robot.move_dir(matriz)
-#             return
-        
-#         else 
-#             robot.retrocede = False
+# def pode_mover_desejado(robot):
+#     if(pode_mover_desejado_esquerda(robot) or pode_mover_desejado_direita(robot)):
+#         return True
 
-#     if not rb_pos_acima.visitado:
-#         if robot.pode_mover_acima:
-#             robot.move_acima(matriz)
-#             return 
-    
-#     if (robot.direcao_desejada == "Direita" and not pode_mover_desejado_direita(robot))
-#      or (robot.direcao_desejada == "Esquerda" and not pode_mover_desejado_esquerda(robot)):
-#         if robot.y_pos != 5:
-#             robot.movendo_acima = True
-#         if robot.y_pos == 5:
-#             robot.movendo_abaixo = False
-
-#         troca_sentido(robot)
-    
-#     if robot.movendo_acima:
-#         if robot.pode_mover_acima(matriz):
-#             robot.move_acima(matriz)
-#             robot.movendo_acima = False
-#             return
-    
-#     if robot.movendo_abaixo:
-#         if robot.pode_mover_abaixo(matriz):
-#             robot.move_abaixo(matriz)
-#             robot.movendo_abaixo = False
-#             return
-    
-#     if not pode_mover_desejado(robot):
-#         if robot.pode_mover_acima(robot):
-#             robot.move_acima(matriz)
-#             return
-        
-#         troca_sentido(robot)
-
-#         if robot.y_pos != 5 :
-#             robot.movendo_acima = True
-        
-#         if pode_mover_desejado(robot):
-#             if pode_mover_desejado_direita(robot):
-#                 robot.move_direita(matriz)
-#                 return
-#             else if pode_mover_desejado_esquerda(robot):
-#                 robot.move_esquerda(matriz)
-#                 return
-#             else 
-#                 pass
-    
-#     if pode_mover_desejado(robot):
-#         if pode_mover_desejado_direita(robot):
-#             robot.move_direita(matriz)
-#             return
-#         else if pode_mover_desejado_esquerda(robot):
-#             robot.move_esquerda(matriz)
-#             return
-#         else 
-#             pass
-
-def pode_mover_desejado_esquerda(robot):
-    if robot.direcao_desejada == "Esquerda" and robot.pode_mover_esq(matriz):
+def pode_mover_direcao(robot, direcao):
+    if direcao == "Esquerda" and robot.pode_mover_esq(matriz):
+        return True
+    if direcao == "Direita" and robot.pode_mover_dir(matriz):
+        return True
+    if direcao == "Acima" and robot.pode_mover_acima(matriz):
+        return True
+    if direcao == "Abaixo" and robot.pode_mover_abaixo(matriz):
         return True
 
-def pode_mover_desejado_direita(robot):
-    if robot.direcao_desejada == "Direita" and robot.pode_mover_dir(matriz):
-        return True
-
-def pode_mover_desejado(robot):
-    if(pode_mover_desejado_esquerda(robot) or pode_mover_desejado_direita(robot)):
-        return True
+def mover_direcao(robot, matriz, direcao):
+    if direcao == "Esquerda":
+        robot.move_esq(matriz)
+    else if direcao == "Direita":
+        robot.move_dir(matriz)
+    else if direcao == "Acima":
+        robot.move_acima(matriz)
+    else:
+        robot.move_abaixo(matriz)
 
 def troca_sentido(robot):
     robot.direcao_desejada = "Esquerda" if robot.direcao_desejada == "Direita" else "Esquerda"
@@ -408,5 +331,5 @@ def na_posicao(y,x):
         return True
 
 def linha_diferente(robot):
-    if robot.pos_ant[0] != robot.y_pos :
+    if robot.pos_ant[1] != robot.y_pos :
         return True
