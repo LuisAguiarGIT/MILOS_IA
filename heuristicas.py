@@ -200,6 +200,7 @@ def modo_volta_inicio(robot, jogo):
             return 
     
     # 7 - Obstáculo ou limite
+    
     if (not pode_mover_direcao(robot, robot.direcao_desejada)):
         if robot.y_pos != 5:
             print("OBSTACULO, MOVENDO ABAIXO...", file=stderr)
